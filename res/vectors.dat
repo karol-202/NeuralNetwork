@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<vectors>
+	<vector>
+		<input>0.761</input>
+		<input>-0.258</input>
+		<reqOutput>0.9</reqOutput>
+	</vector>
+	<vector>
+		<input>0.05</input>
+		<input>0.656</input>
+		<reqOutput>0.47</reqOutput>
+	</vector>
+</vectors>
