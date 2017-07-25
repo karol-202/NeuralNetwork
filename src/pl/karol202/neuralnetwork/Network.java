@@ -3,6 +3,7 @@ package pl.karol202.neuralnetwork;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 public class Network implements Runnable
 {
@@ -30,15 +31,13 @@ public class Network implements Runnable
 
 	public void randomWeights(float minValue, float maxValue)
 	{
-		for(Layer layer : layers)
-			layer.randomWeights(minValue, maxValue);
+		Stream.of(layers).forEach(l -> l.randomWeights(minValue, maxValue));
 	}
 
 	private float[] calc(float[] inputs)
 	{
 		outputs = inputs;
-		for(Layer layer : layers)
-			outputs = layer.calc(outputs);
+		Stream.of(layers).forEach(l -> l.calc(outputs));
 		return outputs;
 	}
 
@@ -67,8 +66,7 @@ public class Network implements Runnable
 
 	private void correctWeights()
 	{
-		for(Layer layer : layers)
-			layer.learn();
+		Stream.of(layers).forEach(Layer::learn);
 		outputs = null;
 	}
 

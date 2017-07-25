@@ -25,20 +25,20 @@ public class Neuron
 		this.weights = weights;
 	}
 
-	public void randomWeights(float minValue, float maxValue)
+	void randomWeights(float minValue, float maxValue)
 	{
 		Random random = new Random();
 		float range = maxValue - minValue;
 		for(int i = 0; i < weights.length; i++)
 		{
-			float w;
-			do w = (random.nextFloat() * range) - (range / 2);
-			while(w == 0);
-			weights[i] = w;
+			float weight;
+			do weight = (random.nextFloat() * range) - (range / 2);
+			while(weight == 0);
+			weights[i] = weight;
 		}
 	}
 
-	public float calc(float[] inputs)
+	float calc(float[] inputs)
 	{
 		if(inputs.length != (weights.length - 1)) throw new RuntimeException("Nieprawidłowa ilość wejść.");
 		this.inputs = inputs;
@@ -49,7 +49,7 @@ public class Neuron
 		return output = activation.calculate(sum);
 	}
 
-	public void calcWeights(float error, float learnRatio)
+	void calcWeights(float error, float learnRatio)
 	{
 		this.error = error * activation.calcDerivative(output);
 		newWeights = new float[weights.length];
@@ -58,7 +58,7 @@ public class Neuron
 		newWeights[inputs.length] = weights[inputs.length] + learnRatio * this.error;
 	}
 
-	public void learn()
+	void learn()
 	{
 		weights = newWeights;
 		inputs = null;
@@ -72,7 +72,7 @@ public class Neuron
 		return weights[weight];
 	}
 
-	public float getError()
+	float getError()
 	{
 		return error;
 	}
@@ -82,7 +82,7 @@ public class Neuron
 		return weights.length - 1;
 	}
 
-	public void dumpNeuron(PrintWriter pw, int layer, int neuron)
+	void dumpNeuron(PrintWriter pw, int layer, int neuron)
 	{
 		pw.println("    Neuron " + neuron + " w warstwie " + layer);
 		activation.dumpActivation(pw);

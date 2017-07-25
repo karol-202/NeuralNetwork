@@ -230,7 +230,7 @@ public class Main implements Network.OnLearningListener
 				number = Float.parseFloat(line);
 				if((number >= -1 && number <= 1) || !range) return number;
 			}
-			catch(NumberFormatException e) {}
+			catch(NumberFormatException ignored) { }
 			System.out.println("Podaj liczbę" + (range ? " z przedziału od -1 do 1" : ""));
 		}
 		while(true);

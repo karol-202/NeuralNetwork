@@ -11,12 +11,12 @@ public class Layer
 		this.neurons = neurons;
 	}
 
-	public void randomWeights(float minValue, float maxValue)
+	void randomWeights(float minValue, float maxValue)
 	{
 		for(Neuron neuron : neurons) neuron.randomWeights(minValue, maxValue);
 	}
 
-	public float[] calc(float[] inputs)
+	float[] calc(float[] inputs)
 	{
 		float[] outputs = new float[neurons.length];
 		for(int i = 0; i < neurons.length; i++)
@@ -24,14 +24,14 @@ public class Layer
 		return outputs;
 	}
 
-	public void calcWeights(float[] errors, float learnRatio)
+	void calcWeights(float[] errors, float learnRatio)
 	{
 		if(neurons.length != errors.length) throw new RuntimeException("Nieprawidłowa ilość wartości błędów.");
 		for(int i = 0; i < neurons.length; i++)
 			neurons[i].calcWeights(errors[i], learnRatio);
 	}
 
-	public float[] calcErrors(Layer nextLayer)
+	float[] calcErrors(Layer nextLayer)
 	{
 		float[] errors = new float[neurons.length];
 		for(int i = 0; i < neurons.length; i++)
@@ -47,17 +47,17 @@ public class Layer
 		return errors;
 	}
 
-	public void learn()
+	void learn()
 	{
 		for(Neuron neuron : neurons) neuron.learn();
 	}
 
-	public int getSize()
+	int getSize()
 	{
 		return neurons.length;
 	}
 
-	public int getInputsLength()
+	int getInputsLength()
 	{
 		return neurons[0].getInputsLength();
 	}
@@ -67,7 +67,7 @@ public class Layer
 		return neurons;
 	}
 
-	public void dumpLayer(PrintWriter pw, int layer)
+	void dumpLayer(PrintWriter pw, int layer)
 	{
 		pw.println("  Warstwa " + layer);
 		for(int i = 0; i < neurons.length; i++)
