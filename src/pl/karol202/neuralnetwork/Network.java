@@ -1,8 +1,8 @@
 package pl.karol202.neuralnetwork;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Network implements Runnable
@@ -17,7 +17,7 @@ public class Network implements Runnable
 
 	private float[] outputs;
 
-	private ArrayList<Vector> vectors;
+	private List<? extends Vector> vectors;
 	private float dstError;
 	private OnLearningListener listener;
 	private boolean stop;
@@ -37,7 +37,8 @@ public class Network implements Runnable
 	private float[] calc(float[] inputs)
 	{
 		outputs = inputs;
-		Stream.of(layers).forEach(l -> l.calc(outputs));
+		for(Layer layer : layers)
+			outputs = layer.calc(outputs);
 		return outputs;
 	}
 
@@ -96,7 +97,7 @@ public class Network implements Runnable
 		return learn(vector.getReqOutputs());
 	}
 
-	public void learnContinuous(ArrayList<Vector> vectors, float dstError, OnLearningListener listener)
+	public void learnContinuous(List<? extends Vector> vectors, float dstError, OnLearningListener listener)
 	{
 		this.vectors = vectors;
 		this.dstError = dstError;
