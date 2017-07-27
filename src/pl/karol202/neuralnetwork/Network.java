@@ -1,32 +1,19 @@
 package pl.karol202.neuralnetwork;
 
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 
-public class Network implements Runnable
+public class Network
 {
-	public interface OnLearningListener
-	{
-		void onLearning(Vector vector, float[] errors, boolean learning, boolean stop);
-	}
-
 	private Layer[] layers;
-	private float learnRatio;
+	private float learnRate;
 
 	private float[] outputs;
 
-	private List<? extends Vector> vectors;
-	private float dstError;
-	private OnLearningListener listener;
-	private boolean stop;
-	private Thread thread;
-
-	public Network(Layer[] layers, float learnRatio)
+	public Network(Layer[] layers, float learnRate)
 	{
 		this.layers = layers;
-		this.learnRatio = learnRatio;
+		this.learnRate = learnRate;
 	}
 
 	public void randomWeights(float minValue, float maxValue)
@@ -42,7 +29,7 @@ public class Network implements Runnable
 		return outputs;
 	}
 
-	private float[] calcWeights(float[] valid)
+	private float[] calcErrors(float[] valid)
 	{
 		float[] networkErrors = new float[valid.length];
 		Layer nextLayer = null;
@@ -58,81 +45,31 @@ public class Network implements Runnable
 					errors[j] = networkErrors[j] = valid[j] - outputs[j];
 				}
 			}
-			else errors = layer.calcErrors(nextLayer);
-			layer.calcWeights(errors, learnRatio);
+			else errors = layer.calcErrorsUsingBackpropagation(nextLayer);
+			layer.setErrors(errors);
 			nextLayer = layer;
 		}
 		return networkErrors;
 	}
 
-	private void correctWeights()
-	{
-		Stream.of(layers).forEach(Layer::learn);
-		outputs = null;
-	}
-
 	private float[] learn(float[] valid)
 	{
-		float[] errors = calcWeights(valid);
-		correctWeights();
+		float[] errors = calcErrors(valid);
+		for(Layer layer : layers) layer.learn(learnRate);
+		
+		outputs = null;
 		return errors;
 	}
-
-	public void dumpNetwork(PrintWriter pw)
-	{
-		pw.println("Sieć neuronowa, współczynnik nauki: " + learnRatio);
-		pw.println("Warstwy:");
-		for(int i = 0; i < layers.length; i++)
-			layers[i].dumpLayer(pw, i);
-	}
-
-	public float[] test(Vector vector)
+	
+	public float[] testVector(Vector vector)
 	{
 		return calc(vector.getInputs());
 	}
 
-	public float[] learnSingle(Vector vector)
+	public float[] learnVector(Vector vector)
 	{
-		test(vector);
+		calc(vector.getInputs());
 		return learn(vector.getReqOutputs());
-	}
-
-	public void learnContinuous(List<? extends Vector> vectors, float dstError, OnLearningListener listener)
-	{
-		this.vectors = vectors;
-		this.dstError = dstError;
-		this.listener = listener;
-		this.stop = false;
-		thread = new Thread(this);
-		thread.start();
-	}
-
-	@Override
-	public void run()
-	{
-		boolean learning = true;
-		while(learning && !stop)
-		{
-			float[][] errors = new float[vectors.size()][getOutputsLength()];
-			learning = false;
-			Collections.shuffle(vectors);
-			for(int i = 0; i < vectors.size(); i++)
-			{
-				errors[i] = learnSingle(vectors.get(i));
-				listener.onLearning(vectors.get(i), errors[i], true, stop);
-				for(int j = 0; j < errors[i].length; j++)
-					if(Math.abs(errors[i][j]) > dstError) learning = true;
-			}
-		}
-		if(!stop) listener.onLearning(null, null, false, stop);
-		this.vectors = null;
-		this.dstError = -1f;
-		this.listener = null;
-	}
-
-	public void stopLearning()
-	{
-		stop = true;
 	}
 
 	public int getInputsLength()
@@ -148,5 +85,13 @@ public class Network implements Runnable
 	public Layer[] getLayers()
 	{
 		return layers;
+	}
+	
+	public void dumpNetwork(PrintWriter pw)
+	{
+		pw.println("Sieć neuronowa, współczynnik nauki: " + learnRate);
+		pw.println("Warstwy:");
+		for(int i = 0; i < layers.length; i++)
+			layers[i].dumpLayer(pw, i);
 	}
 }

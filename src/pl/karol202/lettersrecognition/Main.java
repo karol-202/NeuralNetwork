@@ -1,96 +1,107 @@
 package pl.karol202.lettersrecognition;
 
 import pl.karol202.neuralnetwork.*;
-import pl.karol202.neuralnetwork.Vector;
+import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class Main implements Network.OnLearningListener
+public class Main implements LearningListener
 {
-	private static final String PATH_LETTERS = "res/Litery";
+	private static final String PATH_TRAIN_IMAGES = "res/Cyfry/train.images";
+	private static final String PATH_TRAIN_LABELS = "res/Cyfry/train.labels";
+	private static final String PATH_TEST_IMAGES = "res/Cyfry/test.images";
+	private static final String PATH_TEST_LABELS = "res/Cyfry/test.labels";
+	
+	private static final int MAX_TRAIN_IMAGES = 20000;
+	private static final int MAX_TEST_IMAGES = 10000;
+	
+	private DigitImageLoader trainImageLoader;
+	private DigitImageLoader testImageLoader;
+	private List<DigitVector> trainVectors;
+	private List<DigitVector> testVectors;
+	
+	private Network network;
+	private ContinuousLearning learning;
 	
 	private Scanner scanner;
-	private Network network;
-	private List<LetterVector> vectors;
 	
 	public Main() throws IOException
 	{
-		scanner = new Scanner(System.in);
+		trainImageLoader = new DigitImageLoader(new File(PATH_TRAIN_IMAGES), new File(PATH_TRAIN_LABELS));
+		testImageLoader = new DigitImageLoader(new File(PATH_TEST_IMAGES), new File(PATH_TEST_LABELS));
+		
+		System.out.println("Ładowanie wektorów...");
+		trainVectors = createTrainVectors();
+		testVectors = createTestVectors();
+		System.out.println("Wektory załadowane.");
 		
 		network = createNetwork();
 		network.randomWeights(-0.1f, 0.1f);
+		learning = new ContinuousLearning(network, this);
 		System.out.println("Sieć utworzona.");
-		vectors = createVectors();
-		System.out.println("Wektory załadowane.");
+		
+		scanner = new Scanner(System.in);
 		waitForInput();
 	}
 	
 	private Network createNetwork()
 	{
-		Neuron[] neurons = new Neuron[12];
-		for(int i = 0; i < neurons.length; i++)
-			neurons[i] = new Neuron(15, new ActivationSigmoidal(1f));
-		Layer layer = new Layer(neurons);
-		return new Network(new Layer[] { layer }, 0.2f);
+		int inputs = trainImageLoader.getWidth() * trainImageLoader.getHeight();
+		
+		Neuron[] hiddenNodes = new Neuron[300];
+		for(int i = 0; i < hiddenNodes.length; i++)
+			hiddenNodes[i] = new Neuron(inputs, new ActivationSigmoidal(1f));
+		Layer hiddenLayer = new Layer(hiddenNodes);
+		
+		Neuron[] outputNodes = new Neuron[10];
+		for(int i = 0; i < outputNodes.length; i++)
+			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1f));
+		Layer outputLayer = new Layer(outputNodes);
+		
+		return new Network(new Layer[] { hiddenLayer, outputLayer }, 0.1f);
 	}
 	
-	private List<LetterVector> createVectors() throws IOException
+	private List<DigitVector> createTrainVectors() throws IOException
 	{
-		List<LetterVector> vectors = new ArrayList<>();
-		File directory = new File(PATH_LETTERS);
-		File[] files = directory.listFiles();
-		if(files == null) return vectors;
-		
-		for(File file : files)
+		return Stream.of(trainImageLoader.loadImages(MAX_TRAIN_IMAGES))
+					 .map(this::tryToCreateVectorFromImage)
+					 .collect(Collectors.toList());
+	}
+	
+	private List<DigitVector> createTestVectors() throws IOException
+	{
+		return Stream.of(testImageLoader.loadImages(MAX_TEST_IMAGES))
+					 .map(this::tryToCreateVectorFromImage)
+					 .collect(Collectors.toList());
+	}
+	
+	private DigitVector tryToCreateVectorFromImage(DigitImage image)
+	{
+		try
 		{
-			char ch = file.getName().charAt(0);
-			if(ch >= 'a' && ch <= 'z') vectors.add(createVectorForLetter(ch, file.getPath()));
+			return createVectorFromImage(image);
 		}
-		return vectors;
+		catch(IOException exception)
+		{
+			exception.printStackTrace();
+			return null;
+		}
 	}
 	
-	private LetterVector createVectorForLetter(char letter, String path) throws IOException
+	private DigitVector createVectorFromImage(DigitImage image) throws IOException
 	{
-		BufferedImage image = ImageIO.read(new File(path));
+		float[] vectorIn = image.getPixels();
+		float[] vectorOut = new float[10];
+		vectorOut[image.getDigit()] = 1;
 		
-		float[] vectorIn = getPixelsFromImage(image);
-		float[] vectorOut = new float[12];
-		vectorOut[letter - 'a'] = 1;
-		
-		return new LetterVector(letter, vectorIn, vectorOut);
-	}
-	
-	private float[] getPixelsFromImage(BufferedImage image)
-	{
-		float[] pixels = new float[image.getWidth() * image.getHeight()];
-		for(int x = 0; x < image.getWidth(); x++)
-			for(int y = 0; y < image.getHeight(); y++)
-			{
-				int pixel = image.getRGB(x, y);
-				int red = pixel & 0xFF0000 >> 16;
-				int green = pixel & 0xFF00 >> 8;
-				int blue = pixel & 0xFF;
-				int value = Math.max(red, Math.max(green, blue));
-				pixels[y * image.getWidth() + x] = map(value, 0, 100, 1, -1);
-			}
-		return pixels;
-	}
-	
-	private float map(float src, float srcMin, float srcMax, float dstMin, float dstMax)
-	{
-		float srcPoint = (src - srcMin) / (srcMax - srcMin);
-		return lerp(srcPoint, dstMin, dstMax);
-	}
-	
-	private float lerp(float value, float v1, float v2)
-	{
-		return v1 + value * (v2 - v1);
+		return new DigitVector(image.getDigit(), vectorIn, vectorOut);
 	}
 	
 	private void waitForInput() throws IOException
@@ -110,6 +121,7 @@ public class Main implements Network.OnLearningListener
 			while(choice == 0)
 			{
 				choice = scanner.nextInt();
+				scanner.nextLine();
 				switch(choice)
 				{
 				case 1: learnMode(); break;
@@ -127,44 +139,39 @@ public class Main implements Network.OnLearningListener
 	private void learnMode()
 	{
 		System.out.println("Uczenie...");
-		network.learnContinuous(vectors, 0.03f, this);
+		learning.learn(trainVectors, 0.05f);
 		
-		scanner.next();
-		network.stopLearning();
+		scanner.nextLine();
+		learning.stopLearning();
 	}
 	
 	private void recognizeMode() throws IOException
 	{
-		scanner.nextLine();
-		while(true)
+		System.out.println("Rozpoznawanie...");
+		
+		int positive = 0;
+		int negative = 0;
+		for(DigitVector vector : testVectors)
 		{
-			System.out.println("------------------------");
-			System.out.println("Podaj nazwę pliku, lub wciśnij Enter, aby wyjść do menu: ");
-			String fileName = scanner.nextLine();
-			if(fileName.isEmpty()) break;
-			else recognize(fileName);
+			float[] output = network.testVector(vector);
+			
+			float highest = 0f;
+			int highestsIndex = -1;
+			for(int i = 0; i < output.length; i++)
+			{
+				float value = output[i];
+				if(value < 0.7f || value <= highest) continue;
+				highest = value;
+				highestsIndex = i;
+			}
+			
+			if(highestsIndex == -1) System.out.println("Nierozpoznano");
+			else System.out.printf("Rozpoznano: %d  Prawidłowo: %d\n", highestsIndex, vector.getDigit());
+			
+			if(highestsIndex == vector.getDigit()) positive++;
+			else negative++;
 		}
-	}
-	
-	private void recognize(String fileName) throws IOException
-	{
-		String path = String.format("%s/%s", PATH_LETTERS, fileName);
-		BufferedImage image = ImageIO.read(new File(path));
-		
-		float[] pixels = getPixelsFromImage(image);
-		Vector vector = new Vector(pixels, null);
-		
-		float[] output = network.test(vector);
-		System.out.println("Wyjście: " + outputToStringArray(output));
-	}
-	
-	private String outputToStringArray(float[] output)
-	{
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		for(int i = 0; i < output.length; i++)
-			pw.printf("%c: %f\n         ", i + 'a', output[i]);
-		return sw.toString();
+		System.out.println(positive + "    " + negative);
 	}
 	
 	private void resetWeights()
@@ -173,10 +180,15 @@ public class Main implements Network.OnLearningListener
 	}
 	
 	@Override
-	public void onLearning(Vector vector, float[] errors, boolean learning, boolean stop)
+	public void onLearning(float[] errors)
 	{
-		if(learning && !stop) System.out.println("Błąd: " + errorsToStringArray(errors));
-		else System.out.println("Uczenie zakończone");
+		System.out.println("Błąd: " + errorsToStringArray(errors));
+	}
+	
+	@Override
+	public void onLearningEnded()
+	{
+		System.out.println("Uczenie zakończone");
 	}
 	
 	private String errorsToStringArray(float[] errors)

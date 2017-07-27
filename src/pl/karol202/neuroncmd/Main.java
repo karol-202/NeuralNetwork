@@ -1,14 +1,17 @@
 package pl.karol202.neuroncmd;
 
+import pl.karol202.neuralnetwork.ContinuousLearning;
+import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
 import pl.karol202.neuralnetwork.Network;
 import pl.karol202.neuralnetwork.Vector;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
-public class Main implements Network.OnLearningListener
+public class Main implements LearningListener
 {
 	private static final float DST_ERROR = 0.01f;
 	private static final Logger LOGGER = NeuronLogging.LOGGER;
@@ -19,6 +22,8 @@ public class Main implements Network.OnLearningListener
 	private static final String PATH_DATA = "res/data.dat";
 
 	private Network network;
+	private ContinuousLearning learning;
+	
 	private BufferedReader ir;
 
 	private Main()
@@ -27,6 +32,7 @@ public class Main implements Network.OnLearningListener
 		{
 			NeuronLogging.init(PATH_LOG);
 			network = NeuronSave.loadNetwork(PATH_NETWORK);
+			learning = new ContinuousLearning(network, this);
 			NeuronSave.loadData(PATH_DATA, network);
 			ir = new BufferedReader(new InputStreamReader(System.in));
 
@@ -43,7 +49,7 @@ public class Main implements Network.OnLearningListener
 				int choice = 0;
 				while(choice == 0)
 				{
-					choice = (int) getNumber(false);
+					choice = (int) getNumber();
 					switch(choice)
 					{
 					case 1:
@@ -90,7 +96,7 @@ public class Main implements Network.OnLearningListener
 			int choice = 0;
 			while(choice == 0)
 			{
-				choice = (int) getNumber(false);
+				choice = (int) getNumber();
 				switch(choice)
 				{
 				case 1:
@@ -115,11 +121,11 @@ public class Main implements Network.OnLearningListener
 		LOGGER.info("Rozpoczęcie uczenia w trybie ciągłym");
 		System.out.println("Uczenie w trybie ciągłym...");
 
-		ArrayList<Vector> vectors = NeuronSave.loadVector(PATH_VECTORS);
-		network.learnContinuous(vectors, DST_ERROR, this);
+		List<Vector> vectors = NeuronSave.loadVector(PATH_VECTORS);
+		learning.learn(vectors, DST_ERROR);
 
 		ir.readLine();
-		network.stopLearning();
+		learning.stopLearning();
 	}
 
 	private void dumpVectors() throws FileNotFoundException, XMLStreamException
@@ -143,7 +149,7 @@ public class Main implements Network.OnLearningListener
 			int choice = 0;
 			while(choice == 0)
 			{
-				choice = (int) getNumber(false);
+				choice = (int) getNumber();
 				switch(choice)
 				{
 				case 1:
@@ -166,13 +172,13 @@ public class Main implements Network.OnLearningListener
 		float[] inputs = new float[network.getInputsLength()];
 		System.out.println("Podaj wartości wejść(" + inputs.length + "):");
 		for(int i = 0; i < inputs.length; i++)
-			inputs[i] = getNumber(false);
+			inputs[i] = getNumber();
 		if(learning)
 		{
 			System.out.println("Podaj oczekiwane wartości wyjściowe:");
 			float[] reqOutput = new float[network.getOutputsLength()];
 			for(int i = 0; i < reqOutput.length; i++)
-				reqOutput[i] = getNumber(false);
+				reqOutput[i] = getNumber();
 			Vector vector = new Vector(inputs, reqOutput);
 
 			LOGGER.info("-----------------------------------------");
@@ -181,7 +187,7 @@ public class Main implements Network.OnLearningListener
 			LOGGER.info("i oczekiwanymi wartościami wyjściowymi:");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(reqOutput));
 
-			float[] outputs = network.test(vector);
+			float[] outputs = network.testVector(vector);
 
 			LOGGER.info("Wartości wyjściowe");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(outputs));
@@ -189,7 +195,7 @@ public class Main implements Network.OnLearningListener
 			for(float output : outputs)
 				System.out.println(output);
 
-			float[] errors = network.learnSingle(vector);
+			float[] errors = network.learnVector(vector);
 
 			LOGGER.info("Błąd: ");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(errors));
@@ -207,7 +213,7 @@ public class Main implements Network.OnLearningListener
 			LOGGER.info("Testowanie sieci z wartościami wejściowymi:");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(inputs));
 
-			float[] outputs = network.test(vector);
+			float[] outputs = network.testVector(vector);
 
 			LOGGER.info("Wartości wyjściowe");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(outputs));
@@ -219,48 +225,42 @@ public class Main implements Network.OnLearningListener
 		NeuronSave.saveData(PATH_DATA, network);
 	}
 
-	private float getNumber(boolean range) throws IOException
+	private float getNumber() throws IOException
 	{
 		do
 		{
 			String line = ir.readLine();
-			float number;
 			try
 			{
-				number = Float.parseFloat(line);
-				if((number >= -1 && number <= 1) || !range) return number;
+				return Float.parseFloat(line);
 			}
 			catch(NumberFormatException ignored) { }
-			System.out.println("Podaj liczbę" + (range ? " z przedziału od -1 do 1" : ""));
+			System.out.println("Podaj liczbę");
 		}
 		while(true);
 	}
-
+	
 	@Override
-	public void onLearning(Vector vector, float[] errors, boolean learning, boolean stop)
+	public void onLearning(float[] errors)
 	{
+		LOGGER.info("Błąd: " + NeuronLogging.floatArrayToString(errors));
+		System.out.println("Błąd: " + NeuronLogging.floatArrayToString(errors));
 		try
 		{
-			if(learning)
-			{
-				if(!stop)
-				{
-					LOGGER.info("Błąd: " + NeuronLogging.floatArrayToString(errors));
-					System.out.println("Błąd: " + NeuronLogging.floatArrayToString(errors));
-				}
-				NeuronSave.saveData(PATH_DATA, network);
-			}
-			else
-			{
-				LOGGER.info("Uczenie zakończone");
-				LOGGER.info("-----------------------------------------");
-				System.out.println("Uczenie zakończone");
-			}
+			NeuronSave.saveData(PATH_DATA, network);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void onLearningEnded()
+	{
+		LOGGER.info("Uczenie zakończone");
+		LOGGER.info("-----------------------------------------");
+		System.out.println("Uczenie zakończone");
 	}
 
 	public static void main(String[] args)

@@ -10,8 +10,7 @@ public class Neuron
 
 	private float[] inputs;
 	private float output;
-	private float error;
-	private float[] newWeights;
+	private float transformedError;
 
 	public Neuron(int inputs, Activation activation)
 	{
@@ -49,22 +48,30 @@ public class Neuron
 		return output = activation.calculate(sum);
 	}
 
-	void calcWeights(float error, float learnRatio)
+	void setError(float error)
 	{
-		this.error = error * activation.calcDerivative(output);
-		newWeights = new float[weights.length];
-		for(int i = 0; i < inputs.length; i++)
-			newWeights[i] = weights[i] + learnRatio * inputs[i] * this.error;
-		newWeights[inputs.length] = weights[inputs.length] + learnRatio * this.error;
+		transformedError = error * activation.calcDerivative(output);
 	}
 
-	void learn()
+	void learn(float learnRate)
 	{
-		weights = newWeights;
+		for(int i = 0; i < inputs.length; i++)
+			weights[i] += learnRate * inputs[i] * transformedError;
+		weights[inputs.length] += learnRate * transformedError;
+		
+		clear();
+	}
+	
+	private void clear()
+	{
 		inputs = null;
 		output = 0f;
-		error = 0f;
-		newWeights = null;
+		transformedError = 0f;
+	}
+	
+	public int getInputsLength()
+	{
+		return weights.length - 1;
 	}
 
 	public float getWeight(int weight)
@@ -74,20 +81,14 @@ public class Neuron
 
 	float getError()
 	{
-		return error;
+		return transformedError;
 	}
-
-	public int getInputsLength()
-	{
-		return weights.length - 1;
-	}
-
+	
 	void dumpNeuron(PrintWriter pw, int layer, int neuron)
 	{
 		pw.println("    Neuron " + neuron + " w warstwie " + layer);
 		activation.dumpActivation(pw);
 		pw.println("    Wagi:");
-		for(int i = 0; i < weights.length; i++)
-			pw.println("      " + weights[i]);
+		for(float weight : weights) pw.println("      " + weight);
 	}
 }

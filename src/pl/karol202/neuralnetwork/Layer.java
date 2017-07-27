@@ -23,15 +23,8 @@ public class Layer
 			outputs[i] = neurons[i].calc(inputs);
 		return outputs;
 	}
-
-	void calcWeights(float[] errors, float learnRatio)
-	{
-		if(neurons.length != errors.length) throw new RuntimeException("Nieprawidłowa ilość wartości błędów.");
-		for(int i = 0; i < neurons.length; i++)
-			neurons[i].calcWeights(errors[i], learnRatio);
-	}
-
-	float[] calcErrors(Layer nextLayer)
+	
+	float[] calcErrorsUsingBackpropagation(Layer nextLayer)
 	{
 		float[] errors = new float[neurons.length];
 		for(int i = 0; i < neurons.length; i++)
@@ -47,9 +40,16 @@ public class Layer
 		return errors;
 	}
 
-	void learn()
+	void setErrors(float[] errors)
 	{
-		for(Neuron neuron : neurons) neuron.learn();
+		if(neurons.length != errors.length) throw new RuntimeException("Nieprawidłowa ilość wartości błędów.");
+		for(int i = 0; i < neurons.length; i++)
+			neurons[i].setError(errors[i]);
+	}
+
+	void learn(float learnRate)
+	{
+		for(Neuron neuron : neurons) neuron.learn(learnRate);
 	}
 
 	int getSize()
