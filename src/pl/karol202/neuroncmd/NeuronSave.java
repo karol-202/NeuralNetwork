@@ -1,14 +1,13 @@
 package pl.karol202.neuroncmd;
 
-import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import pl.karol202.neuralnetwork.*;
 
-import javax.xml.stream.*;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.*;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -302,105 +301,5 @@ class NeuronSave
 		}
 		reader.close();
 		return vectors;
-	}
-
-	static void loadData(String file, Network network) throws XMLStreamException, FileNotFoundException
-	{
-		if(!new File(file).exists()) return;
-		FileInputStream fis = new FileInputStream(file);
-		XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(fis);
-
-		DataRS state = DataRS.NONE;
-		ArrayList<Float> weights = null;
-		float weight = Float.NaN;
-
-		while(reader.hasNext())
-		{
-			XMLEvent event = reader.nextEvent();
-			if(event.isStartElement())
-			{
-				StartElement startElement = event.asStartElement();
-				if(startElement.getName().toString().equals("data"))
-				{
-					if(state != DataRS.NONE)
-						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu rozpoczynającego: data");
-					state = DataRS.DATA;
-
-					weights = new ArrayList<Float>();
-				}
-				else if(startElement.getName().toString().equals("weight"))
-				{
-					if(state != DataRS.DATA)
-						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu rozpoczynającego: weight");
-					state = DataRS.WEIGHT;
-
-					weight = Float.NaN;
-				}
-			}
-			else if(event.isEndElement())
-			{
-				EndElement endElement = event.asEndElement();
-				if(endElement.getName().toString().equals("data"))
-				{
-					if(state != DataRS.DATA)
-						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu kończącego: data");
-
-					break;
-				}
-				else if(endElement.getName().toString().equals("weight"))
-				{
-					if(state != DataRS.WEIGHT)
-						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu kończącego: weight");
-					state = DataRS.DATA;
-
-					if(weight == Float.NaN) throw new RuntimeException("Błąd parsowania pliku: brak wartości: weight");
-					weights.add(weight);
-				}
-			}
-			else if(event.isCharacters())
-			{
-				String characters = event.asCharacters().toString();
-				if(state == DataRS.WEIGHT) weight = Float.parseFloat(characters);
-			}
-		}
-		reader.close();
-
-		int offset = 0;
-		for(Layer layer : network.getLayers())
-		{
-			for(Neuron neuron : layer.getNeurons())
-			{
-				float[] set = new float[neuron.getInputsLength() + 1];
-				for(int i = 0; i < set.length; i++)
-					set[i] = weights.get(i + offset);
-				neuron.setWeights(set);
-				offset += set.length;
-			}
-		}
-	}
-
-	static void saveData(String file, Network network) throws XMLStreamException, FileNotFoundException
-	{
-		FileOutputStream fos = new FileOutputStream(file);
-		XMLStreamWriter streamWriter = new IndentingXMLStreamWriter(XMLOutputFactory.newInstance().createXMLStreamWriter(fos));
-
-		streamWriter.writeStartDocument();
-		streamWriter.writeStartElement("data");
-		for(Layer layer : network.getLayers())
-		{
-			for(Neuron neuron : layer.getNeurons())
-			{
-				for(int i = 0; i <= neuron.getInputsLength(); i++)
-				{
-					streamWriter.writeStartElement("weight");
-					streamWriter.writeCharacters(Float.toString(neuron.getWeight(i)));
-					streamWriter.writeEndElement();
-				}
-			}
-		}
-		streamWriter.writeEndElement();
-		streamWriter.writeEndDocument();
-		streamWriter.flush();
-		streamWriter.close();
 	}
 }

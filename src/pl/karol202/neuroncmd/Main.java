@@ -3,6 +3,7 @@ package pl.karol202.neuroncmd;
 import pl.karol202.neuralnetwork.ContinuousLearning;
 import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
 import pl.karol202.neuralnetwork.Network;
+import pl.karol202.neuralnetwork.NetworkLoader;
 import pl.karol202.neuralnetwork.Vector;
 
 import javax.xml.stream.XMLStreamException;
@@ -16,13 +17,16 @@ public class Main implements LearningListener
 	private static final float DST_ERROR = 0.01f;
 	private static final Logger LOGGER = NeuronLogging.LOGGER;
 
-	private static final String PATH_LOG = "res/log.txt";
-	private static final String PATH_NETWORK = "res/neurons.dat";
-	private static final String PATH_VECTORS = "res/vectors.dat";
-	private static final String PATH_DATA = "res/data.dat";
+	private static final String PATH_LOG = "res/neuroncmd/log.txt";
+	private static final String PATH_NETWORK = "res/neuroncmd/neurons.dat";
+	private static final String PATH_VECTORS = "res/neuroncmd/vectors.dat";
+	private static final String PATH_DATA = "res/neuroncmd/data.dat";
 
 	private Network network;
 	private ContinuousLearning learning;
+	
+	private File dataFile;
+	private NetworkLoader networkLoader;
 	
 	private BufferedReader ir;
 
@@ -33,7 +37,11 @@ public class Main implements LearningListener
 			NeuronLogging.init(PATH_LOG);
 			network = NeuronSave.loadNetwork(PATH_NETWORK);
 			learning = new ContinuousLearning(network, this);
-			NeuronSave.loadData(PATH_DATA, network);
+			
+			dataFile = new File(PATH_DATA);
+			networkLoader = new NetworkLoader(network);
+			networkLoader.tryToLoadNetworkData(dataFile);
+			
 			ir = new BufferedReader(new InputStreamReader(System.in));
 
 			while(true)
@@ -65,7 +73,7 @@ public class Main implements LearningListener
 						break;
 					case 4:
 						network.randomWeights(-0.1f, 0.1f);
-						NeuronSave.saveData(PATH_DATA, network);
+						networkLoader.tryToSaveNetworkData(dataFile);
 						break;
 					case 5:
 						break;
@@ -222,7 +230,7 @@ public class Main implements LearningListener
 				System.out.println(output);
 			LOGGER.info("-----------------------------------------");
 		}
-		NeuronSave.saveData(PATH_DATA, network);
+		networkLoader.tryToSaveNetworkData(dataFile);
 	}
 
 	private float getNumber() throws IOException
@@ -247,7 +255,7 @@ public class Main implements LearningListener
 		System.out.println("Błąd: " + NeuronLogging.floatArrayToString(errors));
 		try
 		{
-			NeuronSave.saveData(PATH_DATA, network);
+			networkLoader.tryToSaveNetworkData(dataFile);
 		}
 		catch(Exception e)
 		{

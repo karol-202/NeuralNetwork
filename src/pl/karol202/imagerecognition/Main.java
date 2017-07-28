@@ -1,4 +1,4 @@
-package pl.karol202.lettersrecognition;
+package pl.karol202.imagerecognition;
 
 import pl.karol202.neuralnetwork.*;
 import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
@@ -14,10 +14,11 @@ import java.util.stream.Stream;
 
 public class Main implements LearningListener
 {
-	private static final String PATH_TRAIN_IMAGES = "res/Cyfry/train.images";
-	private static final String PATH_TRAIN_LABELS = "res/Cyfry/train.labels";
-	private static final String PATH_TEST_IMAGES = "res/Cyfry/test.images";
-	private static final String PATH_TEST_LABELS = "res/Cyfry/test.labels";
+	private static final String PATH_TRAIN_IMAGES = "res/imagerecognition/Cyfry/train.images";
+	private static final String PATH_TRAIN_LABELS = "res/imagerecognition/Cyfry/train.labels";
+	private static final String PATH_TEST_IMAGES = "res/imagerecognition/Cyfry/test.images";
+	private static final String PATH_TEST_LABELS = "res/imagerecognition/Cyfry/test.labels";
+	private static final String PATH_NETWORK_DATA = "res/imagerecognition/network.dat";
 	
 	private static final int MAX_TRAIN_IMAGES = 20000;
 	private static final int MAX_TEST_IMAGES = 10000;
@@ -29,6 +30,9 @@ public class Main implements LearningListener
 	
 	private Network network;
 	private ContinuousLearning learning;
+	
+	private File networkFile;
+	private NetworkLoader networkLoader;
 	
 	private Scanner scanner;
 	
@@ -45,6 +49,10 @@ public class Main implements LearningListener
 		network = createNetwork();
 		network.randomWeights(-0.1f, 0.1f);
 		learning = new ContinuousLearning(network, this);
+		
+		networkFile = new File(PATH_NETWORK_DATA);
+		networkLoader = new NetworkLoader(network);
+		networkLoader.tryToLoadNetworkData(networkFile);
 		System.out.println("Sieć utworzona.");
 		
 		scanner = new Scanner(System.in);
@@ -177,6 +185,7 @@ public class Main implements LearningListener
 	private void resetWeights()
 	{
 		network.randomWeights(-0.1f, 0.1f);
+		networkLoader.tryToSaveNetworkData(networkFile);
 	}
 	
 	@Override
@@ -189,6 +198,7 @@ public class Main implements LearningListener
 	public void onLearningEnded()
 	{
 		System.out.println("Uczenie zakończone");
+		networkLoader.tryToSaveNetworkData(networkFile);
 	}
 	
 	private String errorsToStringArray(float[] errors)

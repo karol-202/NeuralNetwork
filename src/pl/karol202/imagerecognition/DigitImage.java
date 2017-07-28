@@ -1,4 +1,4 @@
-package pl.karol202.lettersrecognition;
+package pl.karol202.imagerecognition;
 
 class DigitImage
 {

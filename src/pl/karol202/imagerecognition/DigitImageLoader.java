@@ -1,4 +1,4 @@
-package pl.karol202.lettersrecognition;
+package pl.karol202.imagerecognition;
 
 import java.io.*;
 import java.nio.ByteBuffer;

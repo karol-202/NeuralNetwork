@@ -1,5 +1,9 @@
 package pl.karol202.neuralnetwork;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.PrintWriter;
 import java.util.Random;
 
@@ -90,5 +94,37 @@ public class Neuron
 		activation.dumpActivation(pw);
 		pw.println("    Wagi:");
 		for(float weight : weights) pw.println("      " + weight);
+	}
+	
+	void parseNeuron(Element elementNeuron)
+	{
+		NodeList weightsNodes = elementNeuron.getChildNodes();
+		for(int i = 0; i < weightsNodes.getLength(); i++)
+		{
+			Element elementWeight = (Element) weightsNodes.item(i);
+			parseWeight(elementWeight);
+		}
+	}
+	
+	private void parseWeight(Element elementWeight)
+	{
+		int id = Integer.parseInt(elementWeight.getAttribute("id"));
+		float value = Float.parseFloat(elementWeight.getAttribute("value"));
+		weights[id] = value;
+	}
+	
+	Element saveNeuron(Document document)
+	{
+		Element elementNeuron = document.createElement("neuron");
+		for(int i = 0; i < weights.length; i++) elementNeuron.appendChild(saveWeight(document, i));
+		return elementNeuron;
+	}
+	
+	private Element saveWeight(Document document, int weight)
+	{
+		Element elementWeight = document.createElement("weight");
+		elementWeight.setAttribute("id", String.valueOf(weight));
+		elementWeight.setAttribute("value", String.valueOf(weights[weight]));
+		return elementWeight;
 	}
 }

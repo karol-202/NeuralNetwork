@@ -1,5 +1,9 @@
 package pl.karol202.neuralnetwork;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.PrintWriter;
 import java.util.stream.Stream;
 
@@ -93,5 +97,35 @@ public class Network
 		pw.println("Warstwy:");
 		for(int i = 0; i < layers.length; i++)
 			layers[i].dumpLayer(pw, i);
+	}
+	
+	void parseNetwork(Element elementNetwork)
+	{
+		NodeList layersNodes = elementNetwork.getChildNodes();
+		for(int i = 0; i < layersNodes.getLength(); i++)
+		{
+			Element elementLayer = (Element) layersNodes.item(i);
+			parseLayer(elementLayer);
+		}
+	}
+	
+	private void parseLayer(Element elementLayer)
+	{
+		int id = Integer.parseInt(elementLayer.getAttribute("id"));
+		layers[id].parseLayer(elementLayer);
+	}
+	
+	Element saveNetwork(Document document)
+	{
+		Element elementNetwork = document.createElement("network");
+		for(int i = 0; i < layers.length; i++) elementNetwork.appendChild(saveLayer(document, i));
+		return elementNetwork;
+	}
+	
+	private Element saveLayer(Document document, int layer)
+	{
+		Element elementLayer = layers[layer].saveLayer(document);
+		elementLayer.setAttribute("id", String.valueOf(layer));
+		return elementLayer;
 	}
 }
