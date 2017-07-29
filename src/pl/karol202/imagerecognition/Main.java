@@ -2,6 +2,8 @@ package pl.karol202.imagerecognition;
 
 import pl.karol202.neuralnetwork.*;
 import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
+import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
+import pl.karol202.neuralnetwork.output.NominalOutput;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Main implements LearningListener
+public class Main implements LearningListener, ContinuousTesting.TestingListener<DigitVector, Integer>
 {
 	private static final String PATH_TRAIN_IMAGES = "res/imagerecognition/Cyfry/train.images";
 	private static final String PATH_TRAIN_LABELS = "res/imagerecognition/Cyfry/train.labels";
@@ -28,13 +30,18 @@ public class Main implements LearningListener
 	private List<DigitVector> trainVectors;
 	private List<DigitVector> testVectors;
 	
-	private Network network;
+	private Network<Integer> network;
 	private ContinuousLearning learning;
+	private ContinuousTesting<DigitVector, Integer> testing;
 	
 	private File networkFile;
 	private NetworkLoader networkLoader;
 	
 	private Scanner scanner;
+	
+	private int recognizedCorrectly;
+	private int recognizedIncorrectly;
+	private int notRecognized;
 	
 	public Main() throws IOException
 	{
@@ -49,6 +56,7 @@ public class Main implements LearningListener
 		network = createNetwork();
 		network.randomWeights(-0.1f, 0.1f);
 		learning = new ContinuousLearning(network, this);
+		testing = new ContinuousTesting<>(network, this);
 		
 		networkFile = new File(PATH_NETWORK_DATA);
 		networkLoader = new NetworkLoader(network);
@@ -59,7 +67,7 @@ public class Main implements LearningListener
 		waitForInput();
 	}
 	
-	private Network createNetwork()
+	private Network<Integer> createNetwork()
 	{
 		int inputs = trainImageLoader.getWidth() * trainImageLoader.getHeight();
 		
@@ -73,7 +81,8 @@ public class Main implements LearningListener
 			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1f));
 		Layer outputLayer = new Layer(outputNodes);
 		
-		return new Network(new Layer[] { hiddenLayer, outputLayer }, 0.1f);
+		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, 0.1f,
+							 new NominalOutput<>(i -> i, 0.7f));
 	}
 	
 	private List<DigitVector> createTrainVectors() throws IOException
@@ -156,30 +165,13 @@ public class Main implements LearningListener
 	private void recognizeMode() throws IOException
 	{
 		System.out.println("Rozpoznawanie...");
+		recognizedCorrectly = 0;
+		recognizedIncorrectly = 0;
+		notRecognized = 0;
+		testing.test(testVectors);
 		
-		int positive = 0;
-		int negative = 0;
-		for(DigitVector vector : testVectors)
-		{
-			float[] output = network.testVector(vector);
-			
-			float highest = 0f;
-			int highestsIndex = -1;
-			for(int i = 0; i < output.length; i++)
-			{
-				float value = output[i];
-				if(value < 0.7f || value <= highest) continue;
-				highest = value;
-				highestsIndex = i;
-			}
-			
-			if(highestsIndex == -1) System.out.println("Nierozpoznano");
-			else System.out.printf("Rozpoznano: %d  Prawidłowo: %d\n", highestsIndex, vector.getDigit());
-			
-			if(highestsIndex == vector.getDigit()) positive++;
-			else negative++;
-		}
-		System.out.println(positive + "    " + negative);
+		scanner.nextLine();
+		testing.stopLearning();
 	}
 	
 	private void resetWeights()
@@ -199,6 +191,26 @@ public class Main implements LearningListener
 	{
 		System.out.println("Uczenie zakończone");
 		networkLoader.tryToSaveNetworkData(networkFile);
+	}
+	
+	@Override
+	public void onTesting(DigitVector vector, Integer output)
+	{
+		if(output == null) System.out.println("Nierozpoznano.");
+		else System.out.printf("Rozpoznano: %d, oczekiwano: %d. %s\n", output, vector.getDigit(),
+				output == vector.getDigit() ? "Rozpoznano poprawnie" : "Błąd");
+		if(output == null) notRecognized++;
+		else if(output == vector.getDigit()) recognizedCorrectly++;
+		else recognizedIncorrectly++;
+	}
+	
+	@Override
+	public void onTestingEnded()
+	{
+		System.out.println("Testowanie zakończone");
+		System.out.println("Rozpoznano poprawnie: " + recognizedCorrectly);
+		System.out.println("Rozpoznano błędnie: " + recognizedIncorrectly);
+		System.out.println("Nierozpoznano: " + notRecognized);
 	}
 	
 	private String errorsToStringArray(float[] errors)

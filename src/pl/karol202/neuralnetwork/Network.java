@@ -3,21 +3,24 @@ package pl.karol202.neuralnetwork;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import pl.karol202.neuralnetwork.output.OutputType;
 
 import java.io.PrintWriter;
 import java.util.stream.Stream;
 
-public class Network
+public class Network<T>
 {
 	private Layer[] layers;
 	private float learnRate;
+	private OutputType<T> outputType;
 
 	private float[] outputs;
 
-	public Network(Layer[] layers, float learnRate)
+	public Network(Layer[] layers, float learnRate, OutputType<T> outputType)
 	{
 		this.layers = layers;
 		this.learnRate = learnRate;
+		this.outputType = outputType;
 	}
 
 	public void randomWeights(float minValue, float maxValue)
@@ -65,9 +68,16 @@ public class Network
 		return errors;
 	}
 	
-	public float[] testVector(Vector vector)
+	public float[] testVectorAndGetRawOutput(Vector vector)
 	{
 		return calc(vector.getInputs());
+	}
+	
+	public T testVector(Vector vector)
+	{
+		if(outputType == null) throw new IllegalStateException("Cannot convert output without output type specified.");
+		float[] output = calc(vector.getInputs());
+		return outputType.transformOutput(output);
 	}
 
 	public float[] learnVector(Vector vector)
@@ -84,11 +94,6 @@ public class Network
 	public int getOutputsLength()
 	{
 		return layers[layers.length - 1].getSize();
-	}
-
-	public Layer[] getLayers()
-	{
-		return layers;
 	}
 	
 	public void dumpNetwork(PrintWriter pw)

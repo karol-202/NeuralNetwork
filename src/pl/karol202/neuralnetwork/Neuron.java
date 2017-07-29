@@ -3,6 +3,7 @@ package pl.karol202.neuralnetwork;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import pl.karol202.neuralnetwork.activation.Activation;
 
 import java.io.PrintWriter;
 import java.util.Random;

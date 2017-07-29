@@ -195,7 +195,7 @@ public class Main implements LearningListener
 			LOGGER.info("i oczekiwanymi wartościami wyjściowymi:");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(reqOutput));
 
-			float[] outputs = network.testVector(vector);
+			float[] outputs = network.testVectorAndGetRawOutput(vector);
 
 			LOGGER.info("Wartości wyjściowe");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(outputs));
@@ -221,7 +221,7 @@ public class Main implements LearningListener
 			LOGGER.info("Testowanie sieci z wartościami wejściowymi:");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(inputs));
 
-			float[] outputs = network.testVector(vector);
+			float[] outputs = network.testVectorAndGetRawOutput(vector);
 
 			LOGGER.info("Wartości wyjściowe");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(outputs));

@@ -1,6 +1,9 @@
 package pl.karol202.neuroncmd;
 
 import pl.karol202.neuralnetwork.*;
+import pl.karol202.neuralnetwork.activation.Activation;
+import pl.karol202.neuralnetwork.activation.ActivationLinear;
+import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -134,7 +137,7 @@ class NeuronSave
 					if(state != NetworkRS.NETWORK)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: network");
 					Layer[] layerArray = layers.toArray(new Layer[layers.size()]);
-					return new Network(layerArray, learnRatio);
+					return new Network(layerArray, learnRatio, null);
 				}
 				else if(endElement.getName().toString().equals("layer"))
 				{
