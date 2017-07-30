@@ -79,15 +79,15 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		
 		Neuron[] hiddenNodes = new Neuron[300];
 		for(int i = 0; i < hiddenNodes.length; i++)
-			hiddenNodes[i] = new Neuron(inputs, new ActivationSigmoidal(1f));
+			hiddenNodes[i] = new Neuron(inputs, new ActivationSigmoidal(1.2f));
 		Layer hiddenLayer = new Layer(hiddenNodes);
 		
 		Neuron[] outputNodes = new Neuron[10];
 		for(int i = 0; i < outputNodes.length; i++)
-			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1f));
+			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1.2f));
 		Layer outputLayer = new Layer(outputNodes);
 		
-		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, 0.1f,
+		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, 0.3f, 0.9f,
 							 new NominalOutput<>(i -> i, 0.7f));
 	}
 	

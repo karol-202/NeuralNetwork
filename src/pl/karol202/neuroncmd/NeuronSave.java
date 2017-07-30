@@ -26,11 +26,6 @@ class NeuronSave
 	{
 		NONE, VECTORS, VECTOR, INPUT, REQ_OUTPUT
 	}
-
-	private enum DataRS
-	{
-		NONE, DATA, WEIGHT
-	}
 	
 	static Network loadNetwork(String file) throws XMLStreamException, FileNotFoundException
 	{
@@ -39,6 +34,7 @@ class NeuronSave
 
 		NetworkRS state = NetworkRS.NONE;
 		float learnRatio = 0f;
+		float momentum = 0f;
 		ArrayList<Layer> layers = null;
 		int layerInputs = 0;
 		ArrayList<Neuron> layerNeurons = null;
@@ -72,19 +68,21 @@ class NeuronSave
 							layerInputs = Integer.parseInt(attr.getValue());
 						else if(attr.getName().toString().equals("learnRatio"))
 							learnRatio = Float.parseFloat(attr.getValue());
+						else if(attr.getName().toString().equals("momentum"))
+							momentum = Integer.parseInt(attr.getValue());
 					}
 					if(layerInputs == -1)
 						throw new RuntimeException("Błąd parsowania pliku: brak atrybutu: inputs");
 					if(learnRatio == -1)
 						throw new RuntimeException("Błąd parsowania pliku: brak atrybutu: learnRatio");
-					layers = new ArrayList<Layer>();
+					layers = new ArrayList<>();
 				}
 				else if(startElement.getName().toString().equals("layer"))
 				{
 					if(state != NetworkRS.NETWORK)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu rozpoczynającego: layer");
 					state = NetworkRS.LAYER;
-					layerNeurons = new ArrayList<Neuron>();
+					layerNeurons = new ArrayList<>();
 				}
 				else if(startElement.getName().toString().equals("neuron"))
 				{
@@ -121,7 +119,7 @@ class NeuronSave
 					}
 					if(activationType == "")
 						throw new RuntimeException("Błąd parsowania pliku: brak atrybutu: type");
-					activationParams = new HashMap<String, String>();
+					activationParams = new HashMap<>();
 				}
 				else if(state == NetworkRS.ACTIVATION)
 				{
@@ -137,7 +135,7 @@ class NeuronSave
 					if(state != NetworkRS.NETWORK)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: network");
 					Layer[] layerArray = layers.toArray(new Layer[layers.size()]);
-					return new Network(layerArray, learnRatio, null);
+					return new Network(layerArray, learnRatio, momentum, null);
 				}
 				else if(endElement.getName().toString().equals("layer"))
 				{

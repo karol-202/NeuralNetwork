@@ -12,7 +12,9 @@ public class Neuron
 {
 	private float[] weights;
 	private Activation activation;
-
+	
+	private float[] previousWeightsDelta;
+	
 	private float[] inputs;
 	private float output;
 	private float transformedError;
@@ -21,12 +23,8 @@ public class Neuron
 	{
 		this.weights = new float[inputs + 1];
 		this.activation = activation;
-	}
-
-	public void setWeights(float[] weights)
-	{
-		if(weights.length != this.weights.length) throw new RuntimeException("Nieprawidłowa ilość wag");
-		this.weights = weights;
+		
+		this.previousWeightsDelta = new float[weights.length];
 	}
 
 	void randomWeights(float minValue, float maxValue)
@@ -58,11 +56,20 @@ public class Neuron
 		transformedError = error * activation.calcDerivative(output);
 	}
 
-	void learn(float learnRate)
+	void learn(float learnRate, float momentum)
 	{
 		for(int i = 0; i < inputs.length; i++)
-			weights[i] += learnRate * inputs[i] * transformedError;
-		weights[inputs.length] += learnRate * transformedError;
+		{
+			float weightDelta = learnRate * inputs[i] * transformedError;
+			float weightInertia = previousWeightsDelta[i] * momentum;
+			weights[i] += weightDelta + weightInertia;
+			previousWeightsDelta[i] = weightDelta; /*Nie w pełni poprawna implementacja momentum, przy próbie implementacji
+			previousWeightsDelta[i] = weightDelta + weightInertia występuje nieoczekiwnay problem. */
+		}
+		float weightDelta = learnRate * transformedError;
+		float weightInertia = previousWeightsDelta[inputs.length] * momentum;
+		weights[inputs.length] += weightDelta + weightInertia;
+		previousWeightsDelta[inputs.length] = weightDelta;
 		
 		clear();
 	}
@@ -74,12 +81,12 @@ public class Neuron
 		transformedError = 0f;
 	}
 	
-	public int getInputsLength()
+	int getInputsLength()
 	{
 		return weights.length - 1;
 	}
 
-	public float getWeight(int weight)
+	float getWeight(int weight)
 	{
 		return weights[weight];
 	}

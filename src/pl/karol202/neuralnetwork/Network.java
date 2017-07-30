@@ -12,14 +12,16 @@ public class Network<T>
 {
 	private Layer[] layers;
 	private float learnRate;
+	private float momentum;
 	private OutputType<T> outputType;
 
 	private float[] outputs;
 
-	public Network(Layer[] layers, float learnRate, OutputType<T> outputType)
+	public Network(Layer[] layers, float learnRate, float momentum, OutputType<T> outputType)
 	{
 		this.layers = layers;
 		this.learnRate = learnRate;
+		this.momentum = momentum;
 		this.outputType = outputType;
 	}
 
@@ -62,7 +64,7 @@ public class Network<T>
 	private float[] learn(float[] valid)
 	{
 		float[] errors = calcErrors(valid);
-		for(Layer layer : layers) layer.learn(learnRate);
+		for(Layer layer : layers) layer.learn(learnRate, momentum);
 		
 		outputs = null;
 		return errors;

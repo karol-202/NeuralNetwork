@@ -51,9 +51,9 @@ public class Layer
 			neurons[i].setError(errors[i]);
 	}
 
-	void learn(float learnRate)
+	void learn(float learnRate, float momentum)
 	{
-		for(Neuron neuron : neurons) neuron.learn(learnRate);
+		for(Neuron neuron : neurons) neuron.learn(learnRate, momentum);
 	}
 
 	int getSize()
