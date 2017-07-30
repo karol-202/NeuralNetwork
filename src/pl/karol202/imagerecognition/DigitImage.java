@@ -14,6 +14,16 @@ class DigitImage
 		this.pixels = new float[width * height];
 	}
 	
+	public int getWidth()
+	{
+		return width;
+	}
+	
+	public int getHeight()
+	{
+		return height;
+	}
+	
 	float[] getPixels()
 	{
 		return pixels;

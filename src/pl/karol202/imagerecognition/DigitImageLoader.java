@@ -31,8 +31,8 @@ class DigitImageLoader
 	private DigitImage loadImage() throws IOException
 	{
 		DigitImage image = new DigitImage(width, height);
-		for(int x = 0; x < width; x++)
-			for(int y = 0; y < height; y++)
+		for(int y = 0; y < width; y++)
+			for(int x = 0; x < height; x++)
 				image.setPixel(x, y, imageStream.read() / 255f);
 		return image;
 	}

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -37,8 +38,11 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private File networkFile;
 	private NetworkLoader networkLoader;
 	
+	private FrameMain frameMain;
+	
 	private Scanner scanner;
 	
+	private List<RecognitionResult> recognitionResults;
 	private int recognizedCorrectly;
 	private int recognizedIncorrectly;
 	private int notRecognized;
@@ -62,6 +66,8 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		networkLoader = new NetworkLoader(network);
 		networkLoader.tryToLoadNetworkData(networkFile);
 		System.out.println("Sieć utworzona.");
+		
+		frameMain = new FrameMain();
 		
 		scanner = new Scanner(System.in);
 		waitForInput();
@@ -88,37 +94,15 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private List<DigitVector> createTrainVectors() throws IOException
 	{
 		return Stream.of(trainImageLoader.loadImages(MAX_TRAIN_IMAGES))
-					 .map(this::tryToCreateVectorFromImage)
+					 .map(DigitVector::new)
 					 .collect(Collectors.toList());
 	}
 	
 	private List<DigitVector> createTestVectors() throws IOException
 	{
 		return Stream.of(testImageLoader.loadImages(MAX_TEST_IMAGES))
-					 .map(this::tryToCreateVectorFromImage)
+					 .map(DigitVector::new)
 					 .collect(Collectors.toList());
-	}
-	
-	private DigitVector tryToCreateVectorFromImage(DigitImage image)
-	{
-		try
-		{
-			return createVectorFromImage(image);
-		}
-		catch(IOException exception)
-		{
-			exception.printStackTrace();
-			return null;
-		}
-	}
-	
-	private DigitVector createVectorFromImage(DigitImage image) throws IOException
-	{
-		float[] vectorIn = image.getPixels();
-		float[] vectorOut = new float[10];
-		vectorOut[image.getDigit()] = 1;
-		
-		return new DigitVector(image.getDigit(), vectorIn, vectorOut);
 	}
 	
 	private void waitForInput() throws IOException
@@ -165,6 +149,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private void recognizeMode() throws IOException
 	{
 		System.out.println("Rozpoznawanie...");
+		recognitionResults = new ArrayList<>();
 		recognizedCorrectly = 0;
 		recognizedIncorrectly = 0;
 		notRecognized = 0;
@@ -199,9 +184,12 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		if(output == null) System.out.println("Nierozpoznano.");
 		else System.out.printf("Rozpoznano: %d, oczekiwano: %d. %s\n", output, vector.getDigit(),
 				output == vector.getDigit() ? "Rozpoznano poprawnie" : "Błąd");
+		
 		if(output == null) notRecognized++;
 		else if(output == vector.getDigit()) recognizedCorrectly++;
 		else recognizedIncorrectly++;
+		
+		recognitionResults.add(new RecognitionResult(vector.getImage(), output != null ? output : -1));
 	}
 	
 	@Override
@@ -211,6 +199,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		System.out.println("Rozpoznano poprawnie: " + recognizedCorrectly);
 		System.out.println("Rozpoznano błędnie: " + recognizedIncorrectly);
 		System.out.println("Nierozpoznano: " + notRecognized);
+		frameMain.update(recognitionResults);
 	}
 	
 	private String errorsToStringArray(float[] errors)

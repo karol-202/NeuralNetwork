@@ -4,15 +4,23 @@ import pl.karol202.neuralnetwork.Vector;
 
 class DigitVector extends Vector
 {
+	private DigitImage image;
 	private int digit;
 	
-	DigitVector(int numberChar, float[] inputs, float[] reqOutputs)
+	DigitVector(DigitImage image)
 	{
-		super(inputs, reqOutputs);
-		this.digit = numberChar;
+		super(image.getPixels(), new float[10]);
+		this.image = image;
+		this.digit = image.getDigit();
+		getReqOutputs()[digit] = 1;
 	}
 	
-	public int getDigit()
+	DigitImage getImage()
+	{
+		return image;
+	}
+	
+	int getDigit()
 	{
 		return digit;
 	}
