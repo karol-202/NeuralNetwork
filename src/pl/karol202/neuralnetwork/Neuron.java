@@ -63,13 +63,12 @@ public class Neuron
 			float weightDelta = learnRate * inputs[i] * transformedError;
 			float weightInertia = previousWeightsDelta[i] * momentum;
 			weights[i] += weightDelta + weightInertia;
-			previousWeightsDelta[i] = weightDelta; /*Nie w pełni poprawna implementacja momentum, przy próbie implementacji
-			previousWeightsDelta[i] = weightDelta + weightInertia występuje nieoczekiwnay problem. */
+			previousWeightsDelta[i] = weightDelta + weightInertia;
 		}
 		float weightDelta = learnRate * transformedError;
 		float weightInertia = previousWeightsDelta[inputs.length] * momentum;
 		weights[inputs.length] += weightDelta + weightInertia;
-		previousWeightsDelta[inputs.length] = weightDelta;
+		previousWeightsDelta[inputs.length] = weightDelta + weightInertia;
 		
 		clear();
 	}

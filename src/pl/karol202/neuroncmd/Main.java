@@ -249,7 +249,7 @@ public class Main implements LearningListener
 	}
 	
 	@Override
-	public void onLearning(float[] errors)
+	public void onLearnedVector(float[] errors)
 	{
 		LOGGER.info("Błąd: " + NeuronLogging.floatArrayToString(errors));
 		System.out.println("Błąd: " + NeuronLogging.floatArrayToString(errors));
@@ -261,6 +261,13 @@ public class Main implements LearningListener
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void onLearnedEpoch(double meanSquareError, float highestError)
+	{
+		LOGGER.info("Błąd średniokwadratowy: " + meanSquareError);
+		System.out.println("Błąd średniokwadratowy: " + meanSquareError);
 	}
 	
 	@Override

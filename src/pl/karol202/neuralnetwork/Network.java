@@ -98,6 +98,16 @@ public class Network<T>
 		return layers[layers.length - 1].getSize();
 	}
 	
+	public float getLearnRate()
+	{
+		return learnRate;
+	}
+	
+	public void setLearnRate(float learnRate)
+	{
+		this.learnRate = learnRate;
+	}
+	
 	public void dumpNetwork(PrintWriter pw)
 	{
 		pw.println("Sieć neuronowa, współczynnik nauki: " + learnRate);
@@ -108,6 +118,7 @@ public class Network<T>
 	
 	void parseNetwork(Element elementNetwork)
 	{
+		learnRate = Float.parseFloat(elementNetwork.getAttribute("learnRate"));
 		NodeList layersNodes = elementNetwork.getChildNodes();
 		for(int i = 0; i < layersNodes.getLength(); i++)
 		{
@@ -125,6 +136,7 @@ public class Network<T>
 	Element saveNetwork(Document document)
 	{
 		Element elementNetwork = document.createElement("network");
+		elementNetwork.setAttribute("learnRate", String.valueOf(learnRate));
 		for(int i = 0; i < layers.length; i++) elementNetwork.appendChild(saveLayer(document, i));
 		return elementNetwork;
 	}

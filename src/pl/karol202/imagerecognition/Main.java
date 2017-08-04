@@ -23,7 +23,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private static final String PATH_TEST_LABELS = "res/imagerecognition/Cyfry/test.labels";
 	private static final String PATH_NETWORK_DATA = "res/imagerecognition/network.dat";
 	
-	private static final int MAX_TRAIN_IMAGES = 20000;
+	private static final int MAX_TRAIN_IMAGES = 60000;
 	private static final int MAX_TEST_IMAGES = 10000;
 	
 	private DigitImageLoader trainImageLoader;
@@ -87,7 +87,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1.2f));
 		Layer outputLayer = new Layer(outputNodes);
 		
-		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, 0.3f, 0.9f,
+		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, 0.3f, 0.3f,
 							 new NominalOutput<>(i -> i, 0.7f));
 	}
 	
@@ -166,9 +166,16 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	}
 	
 	@Override
-	public void onLearning(float[] errors)
+	public void onLearnedVector(float[] errors)
 	{
-		System.out.println("Błąd: " + errorsToStringArray(errors));
+		//System.out.println("Błąd: " + errorsToStringArray(errors));
+	}
+	
+	@Override
+	public void onLearnedEpoch(double meanSquareError, float highestError)
+	{
+		System.out.printf("Błąd średniokwadratowy: %f\n", meanSquareError);
+		System.out.printf("Największy błąd: %f\n\n", highestError);
 	}
 	
 	@Override
