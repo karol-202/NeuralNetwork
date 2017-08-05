@@ -8,6 +8,6 @@
 	<vector>
 		<input>0.05</input>
 		<input>0.656</input>
-		<reqOutput>0.47</reqOutput>
+		<reqOutput>-0.47</reqOutput>
 	</vector>
 </vectors>

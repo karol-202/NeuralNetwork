@@ -1,1 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><network><layer id="0"><neuron id="0"><weight id="0" value="1.4049515"/><weight id="1" value="-1.3143604"/><weight id="2" value="0.682683"/></neuron></layer></network>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><network learnRate="0.3"><layer id="0"><neuron id="0"><weight id="0" value="1.1107788"/><weight id="1" value="-1.2487401"/><weight id="2" value="0.25557986"/></neuron></layer></network>

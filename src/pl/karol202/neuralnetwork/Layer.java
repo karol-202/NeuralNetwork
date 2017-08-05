@@ -66,11 +66,6 @@ public class Layer
 		return neurons[0].getInputsLength();
 	}
 
-	public Neuron[] getNeurons()
-	{
-		return neurons;
-	}
-
 	void dumpLayer(PrintWriter pw, int layer)
 	{
 		pw.println("  Warstwa " + layer);

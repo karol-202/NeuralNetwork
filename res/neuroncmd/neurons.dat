@@ -2,7 +2,7 @@
 <network inputs="2" learnRatio="0.1">
 	<layer>
 		<neuron inputs="2">
-			<activation type="sigmoidal">
+			<activation type="tangensoidal">
 				<alpha>1</alpha>
 			</activation>
 		</neuron>

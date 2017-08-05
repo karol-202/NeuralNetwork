@@ -4,6 +4,7 @@ import pl.karol202.neuralnetwork.*;
 import pl.karol202.neuralnetwork.activation.Activation;
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
 import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
+import pl.karol202.neuralnetwork.activation.ActivationTangensoidal;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -169,6 +170,12 @@ class NeuronSave
 							throw new RuntimeException("Błąd parsowania pliku: brak atrybutu: alpha");
 						float alpha = Float.parseFloat(activationParams.get("alpha"));
 						activation = new ActivationSigmoidal(alpha);
+						break;
+					case "tangensoidal":
+						if(!activationParams.containsKey("alpha"))
+							throw new RuntimeException("Błąd parsowania pliku: brak atrybutu: alpha");
+						alpha = Float.parseFloat(activationParams.get("alpha"));
+						activation = new ActivationTangensoidal(alpha);
 						break;
 					case "linear":
 						activation = new ActivationLinear();

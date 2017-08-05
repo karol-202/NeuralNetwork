@@ -5,7 +5,7 @@ import java.util.stream.IntStream;
 
 public class NominalOutput<T> implements OutputType<T>
 {
-	private class OutputPair implements Comparable<OutputPair>
+	private static class OutputPair<T> implements Comparable<OutputPair<T>>
 	{
 		private float value;
 		private T output;
@@ -52,9 +52,9 @@ public class NominalOutput<T> implements OutputType<T>
 	@Override
 	public T transformOutput(float[] output)
 	{
-		return IntStream.range(0, output.length).mapToObj(i -> new OutputPair(output[i], outputFunction.apply(i)))
+		return IntStream.range(0, output.length).mapToObj(i -> new OutputPair<>(output[i], outputFunction.apply(i)))
 				.filter(p -> p.getValue() > threshold).sorted().limit(2)
-				.reduce((p1, p2) -> p1.getValue() - minDistance > p2.getValue() ? p1 : null)
-				.orElseGet(() -> new OutputPair(0f, null)).getOutput();
+				.reduce((p1, p2) -> p1.getValue() - minDistance > p2.getValue() ? p1 : new OutputPair<>(0f, null))
+				.orElse(new OutputPair<>(0f, null)).getOutput();
 	}
 }

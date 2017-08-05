@@ -26,6 +26,9 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private static final int MAX_TRAIN_IMAGES = 60000;
 	private static final int MAX_TEST_IMAGES = 10000;
 	
+	private static final float INITIAL_LEARN_RATE = 0.3f;
+	private static final float INITIAL_MOMENTUM = 0.3f;
+	
 	private DigitImageLoader trainImageLoader;
 	private DigitImageLoader testImageLoader;
 	private List<DigitVector> trainVectors;
@@ -87,7 +90,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1.2f));
 		Layer outputLayer = new Layer(outputNodes);
 		
-		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, 0.3f, 0.3f,
+		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, INITIAL_LEARN_RATE, INITIAL_MOMENTUM,
 							 new NominalOutput<>(i -> i, 0.7f));
 	}
 	
@@ -162,6 +165,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private void resetWeights()
 	{
 		network.randomWeights(-0.1f, 0.1f);
+		network.setLearnRate(INITIAL_LEARN_RATE);
 		networkLoader.tryToSaveNetworkData(networkFile);
 	}
 	
@@ -190,7 +194,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	{
 		if(output == null) System.out.println("Nierozpoznano.");
 		else System.out.printf("Rozpoznano: %d, oczekiwano: %d. %s\n", output, vector.getDigit(),
-				output == vector.getDigit() ? "Rozpoznano poprawnie" : "Błąd");
+							   output == vector.getDigit() ? "Rozpoznano poprawnie" : "Błąd");
 		
 		if(output == null) notRecognized++;
 		else if(output == vector.getDigit()) recognizedCorrectly++;
