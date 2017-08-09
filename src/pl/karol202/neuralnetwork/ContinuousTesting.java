@@ -1,5 +1,8 @@
 package pl.karol202.neuralnetwork;
 
+import pl.karol202.neuralnetwork.network.Network;
+import pl.karol202.neuralnetwork.vector.Vector;
+
 import java.util.List;
 
 public class ContinuousTesting<V extends Vector, O> implements Runnable
@@ -11,7 +14,7 @@ public class ContinuousTesting<V extends Vector, O> implements Runnable
 		void onTestingEnded();
 	}
 	
-	private Network<O> network;
+	private Network<O, ?, V> network;
 	private TestingListener<V, O> listener;
 	
 	private List<V> vectors;
@@ -19,7 +22,7 @@ public class ContinuousTesting<V extends Vector, O> implements Runnable
 	private boolean stop;
 	private Thread thread;
 	
-	public ContinuousTesting(Network<O> network, TestingListener<V, O> listener)
+	public ContinuousTesting(Network<O, ?, V> network, TestingListener<V, O> listener)
 	{
 		this.network = network;
 		this.listener = listener;

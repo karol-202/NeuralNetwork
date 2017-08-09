@@ -1,8 +1,13 @@
 package pl.karol202.imagerecognition;
 
-import pl.karol202.neuralnetwork.*;
-import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
+import pl.karol202.neuralnetwork.ContinuousSupervisedLearning;
+import pl.karol202.neuralnetwork.ContinuousSupervisedLearning.LearningListener;
+import pl.karol202.neuralnetwork.ContinuousTesting;
+import pl.karol202.neuralnetwork.NetworkLoader;
 import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
+import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
+import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
 import pl.karol202.neuralnetwork.output.NominalOutput;
 
 import java.io.File;
@@ -34,8 +39,8 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private List<DigitVector> trainVectors;
 	private List<DigitVector> testVectors;
 	
-	private Network<Integer> network;
-	private ContinuousLearning learning;
+	private SupervisedLearnNetwork<Integer, DigitVector> network;
+	private ContinuousSupervisedLearning learning;
 	private ContinuousTesting<DigitVector, Integer> testing;
 	
 	private File networkFile;
@@ -62,7 +67,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		
 		network = createNetwork();
 		network.randomWeights(-0.1f, 0.1f);
-		learning = new ContinuousLearning(network, this);
+		learning = new ContinuousSupervisedLearning(network, this);
 		testing = new ContinuousTesting<>(network, this);
 		
 		networkFile = new File(PATH_NETWORK_DATA);
@@ -76,21 +81,21 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		waitForInput();
 	}
 	
-	private Network<Integer> createNetwork()
+	private SupervisedLearnNetwork<Integer, DigitVector> createNetwork()
 	{
 		int inputs = trainImageLoader.getWidth() * trainImageLoader.getHeight();
 		
-		Neuron[] hiddenNodes = new Neuron[300];
+		SupervisedLearnNeuron[] hiddenNodes = new SupervisedLearnNeuron[300];
 		for(int i = 0; i < hiddenNodes.length; i++)
-			hiddenNodes[i] = new Neuron(inputs, new ActivationSigmoidal(1.2f));
-		Layer hiddenLayer = new Layer(hiddenNodes);
+			hiddenNodes[i] = new SupervisedLearnNeuron(inputs, new ActivationSigmoidal(1.2f));
+		SupervisedLearnLayer hiddenLayer = new SupervisedLearnLayer(hiddenNodes);
 		
-		Neuron[] outputNodes = new Neuron[10];
+		SupervisedLearnNeuron[] outputNodes = new SupervisedLearnNeuron[10];
 		for(int i = 0; i < outputNodes.length; i++)
-			outputNodes[i] = new Neuron(300, new ActivationSigmoidal(1.2f));
-		Layer outputLayer = new Layer(outputNodes);
+			outputNodes[i] = new SupervisedLearnNeuron(300, new ActivationSigmoidal(1.2f));
+		SupervisedLearnLayer outputLayer = new SupervisedLearnLayer(outputNodes);
 		
-		return new Network<>(new Layer[] { hiddenLayer, outputLayer }, INITIAL_LEARN_RATE, INITIAL_MOMENTUM,
+		return new SupervisedLearnNetwork<>(new SupervisedLearnLayer[] { hiddenLayer, outputLayer }, INITIAL_LEARN_RATE, INITIAL_MOMENTUM,
 							 new NominalOutput<>(i -> i, 0.7f));
 	}
 	
@@ -164,7 +169,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	
 	private void resetWeights()
 	{
-		network.randomWeights(-0.1f, 0.1f);
+		network.randomWeights(-0.35f, 0.35f);
 		network.setLearnRate(INITIAL_LEARN_RATE);
 		networkLoader.tryToSaveNetworkData(networkFile);
 	}

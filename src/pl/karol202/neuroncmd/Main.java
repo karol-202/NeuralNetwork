@@ -1,10 +1,11 @@
 package pl.karol202.neuroncmd;
 
-import pl.karol202.neuralnetwork.ContinuousLearning;
-import pl.karol202.neuralnetwork.ContinuousLearning.LearningListener;
-import pl.karol202.neuralnetwork.Network;
+import pl.karol202.neuralnetwork.ContinuousSupervisedLearning;
+import pl.karol202.neuralnetwork.ContinuousSupervisedLearning.LearningListener;
 import pl.karol202.neuralnetwork.NetworkLoader;
-import pl.karol202.neuralnetwork.Vector;
+import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
+import pl.karol202.neuralnetwork.vector.Vector;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
@@ -22,8 +23,8 @@ public class Main implements LearningListener
 	private static final String PATH_VECTORS = "res/neuroncmd/vectors.dat";
 	private static final String PATH_DATA = "res/neuroncmd/data.dat";
 
-	private Network network;
-	private ContinuousLearning learning;
+	private SupervisedLearnNetwork network;
+	private ContinuousSupervisedLearning learning;
 	
 	private File dataFile;
 	private NetworkLoader networkLoader;
@@ -36,7 +37,7 @@ public class Main implements LearningListener
 		{
 			NeuronLogging.init(PATH_LOG);
 			network = NeuronSave.loadNetwork(PATH_NETWORK);
-			learning = new ContinuousLearning(network, this);
+			learning = new ContinuousSupervisedLearning(network, this);
 			
 			dataFile = new File(PATH_DATA);
 			networkLoader = new NetworkLoader(network);
@@ -129,7 +130,7 @@ public class Main implements LearningListener
 		LOGGER.info("Rozpoczęcie uczenia w trybie ciągłym");
 		System.out.println("Uczenie w trybie ciągłym...");
 
-		List<Vector> vectors = NeuronSave.loadVector(PATH_VECTORS);
+		List<SupervisedLearnVector> vectors = NeuronSave.loadVector(PATH_VECTORS);
 		learning.learn(vectors, DST_ERROR);
 
 		ir.readLine();
@@ -138,7 +139,7 @@ public class Main implements LearningListener
 
 	private void dumpVectors() throws FileNotFoundException, XMLStreamException
 	{
-		ArrayList<Vector> vectors = NeuronSave.loadVector(PATH_VECTORS);
+		ArrayList<SupervisedLearnVector> vectors = NeuronSave.loadVector(PATH_VECTORS);
 		PrintWriter pw = new PrintWriter(System.out);
 		for(Vector vector : vectors) vector.dumpVector(pw);
 		pw.flush();
@@ -187,7 +188,7 @@ public class Main implements LearningListener
 			float[] reqOutput = new float[network.getOutputsLength()];
 			for(int i = 0; i < reqOutput.length; i++)
 				reqOutput[i] = getNumber();
-			Vector vector = new Vector(inputs, reqOutput);
+			SupervisedLearnVector vector = new SupervisedLearnVector(inputs, reqOutput);
 
 			LOGGER.info("-----------------------------------------");
 			LOGGER.info("Uczenie sieci z wartościami wejściowymi:");
@@ -202,8 +203,9 @@ public class Main implements LearningListener
 			System.out.println("Wynik: ");
 			for(float output : outputs)
 				System.out.println(output);
-
-			float[] errors = network.learnVector(vector);
+			
+			network.learnVector(vector);
+			float[] errors = network.getErrors();
 
 			LOGGER.info("Błąd: ");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(errors));
@@ -215,7 +217,7 @@ public class Main implements LearningListener
 		}
 		else
 		{
-			Vector vector = new Vector(inputs, null);
+			SupervisedLearnVector vector = new SupervisedLearnVector(inputs, null);
 
 			LOGGER.info("-----------------------------------------");
 			LOGGER.info("Testowanie sieci z wartościami wejściowymi:");

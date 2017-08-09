@@ -3,6 +3,7 @@ package pl.karol202.neuralnetwork;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import pl.karol202.neuralnetwork.network.Network;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

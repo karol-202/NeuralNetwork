@@ -1,10 +1,13 @@
 package pl.karol202.neuroncmd;
 
-import pl.karol202.neuralnetwork.*;
 import pl.karol202.neuralnetwork.activation.Activation;
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
 import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
 import pl.karol202.neuralnetwork.activation.ActivationTangensoidal;
+import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
+import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
+import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -28,7 +31,7 @@ class NeuronSave
 		NONE, VECTORS, VECTOR, INPUT, REQ_OUTPUT
 	}
 	
-	static Network loadNetwork(String file) throws XMLStreamException, FileNotFoundException
+	static SupervisedLearnNetwork loadNetwork(String file) throws XMLStreamException, FileNotFoundException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(fis);
@@ -36,9 +39,9 @@ class NeuronSave
 		NetworkRS state = NetworkRS.NONE;
 		float learnRatio = 0f;
 		float momentum = 0f;
-		ArrayList<Layer> layers = null;
+		ArrayList<SupervisedLearnLayer> layers = null;
 		int layerInputs = 0;
-		ArrayList<Neuron> layerNeurons = null;
+		ArrayList<SupervisedLearnNeuron> layerNeurons = null;
 		int neuronInputs = 0;
 		String activationType = "";
 		Activation activation = null;
@@ -135,16 +138,16 @@ class NeuronSave
 				{
 					if(state != NetworkRS.NETWORK)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: network");
-					Layer[] layerArray = layers.toArray(new Layer[layers.size()]);
-					return new Network(layerArray, learnRatio, momentum, null);
+					SupervisedLearnLayer[] layerArray = layers.toArray(new SupervisedLearnLayer[layers.size()]);
+					return new SupervisedLearnNetwork<>(layerArray, learnRatio, momentum, null);
 				}
 				else if(endElement.getName().toString().equals("layer"))
 				{
 					if(state != NetworkRS.LAYER)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: layer");
 					state = NetworkRS.NETWORK;
-					Neuron[] neurons = layerNeurons.toArray(new Neuron[layerNeurons.size()]);
-					Layer layer = new Layer(neurons);
+					SupervisedLearnNeuron[] neurons = layerNeurons.toArray(new SupervisedLearnNeuron[layerNeurons.size()]);
+					SupervisedLearnLayer layer = new SupervisedLearnLayer(neurons);
 					layers.add(layer);
 					layerInputs = neurons.length;
 				}
@@ -155,7 +158,7 @@ class NeuronSave
 					state = NetworkRS.LAYER;
 					if(neuronInputs != layerInputs)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowa ilość wag neuronu");
-					Neuron neuron = new Neuron(neuronInputs, activation);
+					SupervisedLearnNeuron neuron = new SupervisedLearnNeuron(neuronInputs, activation);
 					layerNeurons.add(neuron);
 				}
 				else if(endElement.getName().toString().equals("activation"))
@@ -201,14 +204,14 @@ class NeuronSave
 		return null;
 	}
 
-	static ArrayList<Vector> loadVector(String file) throws XMLStreamException, FileNotFoundException
+	static ArrayList<SupervisedLearnVector> loadVector(String file) throws XMLStreamException, FileNotFoundException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(fis);
 
 		VectorsRS level = VectorsRS.NONE;
-		ArrayList<Vector> vectors = null;
-		Vector vector = null;
+		ArrayList<SupervisedLearnVector> vectors = null;
+		SupervisedLearnVector vector = null;
 		ArrayList<Float> inputs = null;
 		ArrayList<Float> outputs = null;
 		float input = 0;
@@ -226,7 +229,7 @@ class NeuronSave
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu rozpoczynającego: vectors");
 					level = VectorsRS.VECTORS;
 
-					vectors = new ArrayList<Vector>();
+					vectors = new ArrayList<>();
 				}
 				else if(startElement.getName().toString().equals("vector"))
 				{
@@ -234,9 +237,9 @@ class NeuronSave
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu rozpoczynającego: vector");
 					level = VectorsRS.VECTOR;
 
-					vector = new Vector();
-					inputs = new ArrayList<Float>();
-					outputs = new ArrayList<Float>();
+					vector = new SupervisedLearnVector();
+					inputs = new ArrayList<>();
+					outputs = new ArrayList<>();
 				}
 				else if(startElement.getName().toString().equals("input"))
 				{

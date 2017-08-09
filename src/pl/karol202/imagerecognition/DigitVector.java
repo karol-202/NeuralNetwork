@@ -1,8 +1,8 @@
 package pl.karol202.imagerecognition;
 
-import pl.karol202.neuralnetwork.Vector;
+import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
-class DigitVector extends Vector
+class DigitVector extends SupervisedLearnVector
 {
 	private DigitImage image;
 	private int digit;
