@@ -18,7 +18,7 @@ public abstract class Neuron
 	float[] inputs;
 	float output;
 
-	public Neuron(int inputs, Activation activation)
+	Neuron(int inputs, Activation activation)
 	{
 		this.weights = new float[inputs + 1];
 		this.activation = activation;

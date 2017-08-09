@@ -12,8 +12,6 @@ import pl.karol202.neuralnetwork.output.NominalOutput;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -218,14 +216,14 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		frameMain.update(recognitionResults);
 	}
 	
-	private String errorsToStringArray(float[] errors)
+	/*private String errorsToStringArray(float[] errors)
 	{
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		for(float value : errors)
 			pw.printf("%f\n      ", value);
 		return sw.toString();
-	}
+	}*/
 	
 	public static void main(String[] args)
 	{

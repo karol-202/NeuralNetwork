@@ -29,7 +29,7 @@ public abstract class Network<O, L extends Layer, V extends Vector>
 
 	public void randomWeights(float minValue, float maxValue)
 	{
-		Stream.of(layers).forEach(l -> l.randomWeights(minValue, maxValue));
+		Stream.of(layers).parallel().forEach(l -> l.randomWeights(minValue, maxValue));
 	}
 
 	float[] calc(float[] inputs)
@@ -41,7 +41,7 @@ public abstract class Network<O, L extends Layer, V extends Vector>
 
 	void learn()
 	{
-		for(Layer layer : layers) layer.learn(learnRate, momentum);
+		Stream.of(layers).parallel().forEach(l -> l.learn(learnRate, momentum));
 		
 		outputs = null;
 	}

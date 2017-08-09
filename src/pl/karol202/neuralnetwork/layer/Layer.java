@@ -3,35 +3,37 @@ package pl.karol202.neuralnetwork.layer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import pl.karol202.neuralnetwork.Utils;
 import pl.karol202.neuralnetwork.neuron.Neuron;
 
 import java.io.PrintWriter;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public abstract class Layer<N extends Neuron>
 {
 	N[] neurons;
 
-	public Layer(N[] neurons)
+	Layer(N[] neurons)
 	{
 		this.neurons = neurons;
 	}
 
 	public void randomWeights(float minValue, float maxValue)
 	{
-		for(Neuron neuron : neurons) neuron.randomWeights(minValue, maxValue);
+		Stream.of(neurons).parallel().forEach(n -> n.randomWeights(minValue, maxValue));
 	}
 
 	public float[] calc(float[] inputs)
 	{
-		float[] outputs = new float[neurons.length];
-		for(int i = 0; i < neurons.length; i++)
-			outputs[i] = neurons[i].calc(inputs);
-		return outputs;
+		return Utils.unboxFloatArray(IntStream.range(0, neurons.length).parallel()
+											  .mapToObj(i -> neurons[i].calc(inputs))
+											  .toArray(Float[]::new));
 	}
 
 	public void learn(float learnRate, float momentum)
 	{
-		for(Neuron neuron : neurons) neuron.learn(learnRate, momentum);
+		Stream.of(neurons).parallel().forEach(n -> n.learn(learnRate, momentum));
 	}
 
 	public int getSize()

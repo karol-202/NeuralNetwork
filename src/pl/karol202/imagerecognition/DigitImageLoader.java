@@ -18,7 +18,7 @@ class DigitImageLoader
 	
 	DigitImage[] loadImages(int maxAmount) throws IOException
 	{
-		if(readInt(imageStream) != 2051) throw new RuntimeException("Invalid magic number.");
+		if(readInt(imageStream) != 2051) throw new RuntimeException("Invalid file type.");
 		
 		DigitImage[] images = new DigitImage[readAmount(imageStream, maxAmount)];
 		width = readInt(imageStream);
@@ -31,15 +31,17 @@ class DigitImageLoader
 	private DigitImage loadImage() throws IOException
 	{
 		DigitImage image = new DigitImage(width, height);
-		for(int y = 0; y < width; y++)
-			for(int x = 0; x < height; x++)
-				image.setPixel(x, y, imageStream.read() / 255f);
+		byte[] bytes = new byte[width * height];
+		if(imageStream.read(bytes) != bytes.length) throw new RuntimeException("Invalid file content length.");
+		for(int x = 0; x < height; x++)
+			for(int y = 0; y < width; y++)
+				image.setPixel(x, y, (bytes[y * width + x] & 0xFF) / 255f);
 		return image;
 	}
 	
 	private void labelImages(DigitImage[] images, int maxAmount) throws IOException
 	{
-		if(readInt(labelStream) != 2049) throw new RuntimeException("Invalid magic number.");
+		if(readInt(labelStream) != 2049) throw new RuntimeException("Invalid file type.");
 		
 		int labels = readAmount(labelStream, maxAmount);
 		if(labels != images.length) throw new RuntimeException("Images amount mismatch.");
@@ -54,7 +56,7 @@ class DigitImageLoader
 	private int readInt(InputStream is) throws IOException
 	{
 		byte[] bytes = new byte[4];
-		is.read(bytes, 0, 4);
+		if(is.read(bytes) != 4) throw new RuntimeException("Cannot read integer.");
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		return buffer.getInt();
 	}

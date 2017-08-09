@@ -6,7 +6,7 @@ import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 import java.util.Collections;
 import java.util.List;
 
-public class ContinuousSupervisedLearning implements Runnable
+public class ContinuousSupervisedLearning<V extends SupervisedLearnVector> implements Runnable
 {
 	public interface LearningListener
 	{
@@ -17,22 +17,22 @@ public class ContinuousSupervisedLearning implements Runnable
 		void onLearningEnded();
 	}
 	
-	private SupervisedLearnNetwork network;
+	private SupervisedLearnNetwork<?, V> network;
 	private LearningListener listener;
 	
-	private List<? extends SupervisedLearnVector> vectors;
+	private List<V> vectors;
 	private float maxError;
 	private boolean learning;
 	private boolean stop;
 	private Thread thread;
 	
-	public ContinuousSupervisedLearning(SupervisedLearnNetwork network, LearningListener listener)
+	public ContinuousSupervisedLearning(SupervisedLearnNetwork<?, V> network, LearningListener listener)
 	{
 		this.network = network;
 		this.listener = listener;
 	}
 	
-	public void learn(List<? extends SupervisedLearnVector> vectors, float maxError)
+	public void learn(List<V> vectors, float maxError)
 	{
 		if(learning) return;
 		this.vectors = vectors;
@@ -49,6 +49,7 @@ public class ContinuousSupervisedLearning implements Runnable
 		//double lastMeanSquareError = -1f;
 		while(learning && !stop)
 		{
+			long startTime = System.currentTimeMillis();
 			float[][] errors = new float[vectors.size()][network.getOutputsLength()];
 			float highestError = 0f;
 			learning = false;
@@ -80,6 +81,7 @@ public class ContinuousSupervisedLearning implements Runnable
 				else if(difference < 0) network.setLearnRate(network.getLearnRate() * 0.9f);
 			}
 			lastMeanSquareError = meanSquareError;*/
+			System.out.println("Czas: " + (System.currentTimeMillis() - startTime));
 		}
 		listener.onLearningEnded();
 		vectors = null;

@@ -20,9 +20,7 @@ class DigitImagePanel extends JPanel
 	{
 		byte[] pix = new byte[digitImage.getPixels().length];
 		for(int i = 0; i < pix.length; i++)
-		{
-			pix[i] = (byte) (digitImage.getPixels()[i] * 255);
-		}
+			pix[i] = (byte) (255 - (digitImage.getPixels()[i] * 255));
 		
 		image = new BufferedImage(digitImage.getWidth(), digitImage.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 		WritableRaster raster = image.getRaster();
