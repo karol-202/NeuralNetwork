@@ -24,7 +24,6 @@ public class ContinuousSupervisedLearning<V extends SupervisedLearnVector> imple
 	private float maxError;
 	private boolean learning;
 	private boolean stop;
-	private Thread thread;
 	
 	public ContinuousSupervisedLearning(SupervisedLearnNetwork<?, V> network, LearningListener listener)
 	{
@@ -39,8 +38,7 @@ public class ContinuousSupervisedLearning<V extends SupervisedLearnVector> imple
 		this.maxError = maxError;
 		learning = true;
 		stop = false;
-		thread = new Thread(this);
-		thread.start();
+		new Thread(this).start();
 	}
 	
 	@Override
