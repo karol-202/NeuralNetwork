@@ -6,8 +6,13 @@ import pl.karol202.neuralnetwork.vector.Vector;
 
 public class UnsupervisedLearnNetwork<O, V extends Vector> extends Network<O, UnsupervisedLearnLayer, V>
 {
-	public UnsupervisedLearnNetwork(UnsupervisedLearnLayer[] layers, float learnRate, float momentum, OutputType<O> outputType)
+	public UnsupervisedLearnNetwork(UnsupervisedLearnLayer layer, float learnRate, float momentum, OutputType<O> outputType)
 	{
-		super(layers, learnRate, momentum, outputType);
+		super(new UnsupervisedLearnLayer[] { layer }, learnRate, momentum, outputType);
+	}
+	
+	public float[][] getNeuronsWeights()
+	{
+		return layers[0].getNeuronsWeights();
 	}
 }

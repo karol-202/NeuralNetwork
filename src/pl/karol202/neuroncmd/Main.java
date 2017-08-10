@@ -23,8 +23,8 @@ public class Main implements LearningListener
 	private static final String PATH_VECTORS = "res/neuroncmd/vectors.dat";
 	private static final String PATH_DATA = "res/neuroncmd/data.dat";
 
-	private SupervisedLearnNetwork network;
-	private ContinuousSupervisedLearning learning;
+	private SupervisedLearnNetwork<float[], SupervisedLearnVector> network;
+	private ContinuousSupervisedLearning<SupervisedLearnVector> learning;
 	
 	private File dataFile;
 	private NetworkLoader networkLoader;
@@ -37,7 +37,7 @@ public class Main implements LearningListener
 		{
 			NeuronLogging.init(PATH_LOG);
 			network = NeuronSave.loadNetwork(PATH_NETWORK);
-			learning = new ContinuousSupervisedLearning(network, this);
+			learning = new ContinuousSupervisedLearning<>(network, this);
 			
 			dataFile = new File(PATH_DATA);
 			networkLoader = new NetworkLoader(network);
@@ -196,7 +196,7 @@ public class Main implements LearningListener
 			LOGGER.info("i oczekiwanymi wartościami wyjściowymi:");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(reqOutput));
 
-			float[] outputs = network.testVectorAndGetRawOutput(vector);
+			float[] outputs = network.testVector(vector);
 
 			LOGGER.info("Wartości wyjściowe");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(outputs));
@@ -223,7 +223,7 @@ public class Main implements LearningListener
 			LOGGER.info("Testowanie sieci z wartościami wejściowymi:");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(inputs));
 
-			float[] outputs = network.testVectorAndGetRawOutput(vector);
+			float[] outputs = network.testVector(vector);
 
 			LOGGER.info("Wartości wyjściowe");
 			NeuronLogging.info(NeuronLogging.floatArrayToStringArray(outputs));

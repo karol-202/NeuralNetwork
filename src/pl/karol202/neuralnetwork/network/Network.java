@@ -19,7 +19,7 @@ public abstract class Network<O, L extends Layer, V extends Vector>
 
 	float[] outputs;
 
-	public Network(L[] layers, float learnRate, float momentum, OutputType<O> outputType)
+	Network(L[] layers, float learnRate, float momentum, OutputType<O> outputType)
 	{
 		this.layers = layers;
 		this.learnRate = learnRate;
@@ -44,11 +44,6 @@ public abstract class Network<O, L extends Layer, V extends Vector>
 		Stream.of(layers).parallel().forEach(l -> l.learn(learnRate, momentum));
 		
 		outputs = null;
-	}
-	
-	public float[] testVectorAndGetRawOutput(V vector)
-	{
-		return calc(vector.getInputs());
 	}
 	
 	public O testVector(V vector)

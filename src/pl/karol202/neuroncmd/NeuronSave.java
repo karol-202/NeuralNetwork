@@ -7,6 +7,7 @@ import pl.karol202.neuralnetwork.activation.ActivationTangensoidal;
 import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
 import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
 import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
+import pl.karol202.neuralnetwork.output.RawOutput;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
 import javax.xml.stream.XMLEventReader;
@@ -31,7 +32,7 @@ class NeuronSave
 		NONE, VECTORS, VECTOR, INPUT, REQ_OUTPUT
 	}
 	
-	static SupervisedLearnNetwork loadNetwork(String file) throws XMLStreamException, FileNotFoundException
+	static SupervisedLearnNetwork<float[], SupervisedLearnVector> loadNetwork(String file) throws XMLStreamException, FileNotFoundException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(fis);
@@ -139,7 +140,7 @@ class NeuronSave
 					if(state != NetworkRS.NETWORK)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: network");
 					SupervisedLearnLayer[] layerArray = layers.toArray(new SupervisedLearnLayer[layers.size()]);
-					return new SupervisedLearnNetwork<>(layerArray, learnRatio, momentum, null);
+					return new SupervisedLearnNetwork<>(layerArray, learnRatio, momentum, new RawOutput());
 				}
 				else if(endElement.getName().toString().equals("layer"))
 				{
