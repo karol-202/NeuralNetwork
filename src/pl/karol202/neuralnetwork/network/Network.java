@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public abstract class Network<O, L extends Layer, V extends Vector>
 {
 	L[] layers;
-	private float learnRate;
+	float learnRate;
 	private float momentum;
 	private OutputType<O> outputType;
 

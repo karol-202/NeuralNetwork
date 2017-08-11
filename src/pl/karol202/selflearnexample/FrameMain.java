@@ -3,7 +3,6 @@ package pl.karol202.selflearnexample;
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
 import pl.karol202.neuralnetwork.layer.UnsupervisedLearnLayer;
 import pl.karol202.neuralnetwork.network.UnsupervisedLearnNetwork;
-import pl.karol202.neuralnetwork.neuron.UnsupervisedLearnNeuron;
 import pl.karol202.neuralnetwork.vector.Vector;
 
 import javax.swing.*;
@@ -34,9 +33,7 @@ public class FrameMain extends JFrame
 	
 	private void createNetwork()
 	{
-		UnsupervisedLearnNeuron[] neurons = new UnsupervisedLearnNeuron[30];
-		for(int i = 0; i < neurons.length; i++) neurons[i] = new UnsupervisedLearnNeuron(2, new ActivationLinear());
-		UnsupervisedLearnLayer layer = new UnsupervisedLearnLayer(neurons);
+		UnsupervisedLearnLayer layer = new UnsupervisedLearnLayer(30, 2, new ActivationLinear());
 		
 		network = new UnsupervisedLearnNetwork<>(layer, INITIAL_LEARN_RATE, INITIAL_MOMENTUM, null);
 		network.randomWeights(-1f, 1f);

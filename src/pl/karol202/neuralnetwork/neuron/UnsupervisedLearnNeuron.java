@@ -21,6 +21,10 @@ public class UnsupervisedLearnNeuron extends Neuron
 			weights[i] += weightDelta + weightInertia;
 			previousWeightsDelta[i] = weightDelta + weightInertia;
 		}
+		/*float weightDelta = learnRate * output * (1 - weights[inputs.length]);
+		float weightInertia = previousWeightsDelta[inputs.length] * momentum;
+		weights[inputs.length] += weightDelta + weightInertia;
+		previousWeightsDelta[inputs.length] = weightDelta + weightInertia;*/
 		
 		clear();
 	}

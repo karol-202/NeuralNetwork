@@ -1,5 +1,6 @@
 package pl.karol202.neuralnetwork.layer;
 
+import pl.karol202.neuralnetwork.activation.Activation;
 import pl.karol202.neuralnetwork.neuron.UnsupervisedLearnNeuron;
 
 public class UnsupervisedLearnLayer extends Layer<UnsupervisedLearnNeuron>
@@ -7,6 +8,12 @@ public class UnsupervisedLearnLayer extends Layer<UnsupervisedLearnNeuron>
 	public UnsupervisedLearnLayer(UnsupervisedLearnNeuron[] neurons)
 	{
 		super(neurons);
+	}
+	
+	public UnsupervisedLearnLayer(int neurons, int inputs, Activation activation)
+	{
+		super(new UnsupervisedLearnNeuron[neurons]);
+		for(int i = 0; i < neurons; i++) this.neurons[i] = new UnsupervisedLearnNeuron(inputs, activation);
 	}
 	
 	public float[][] getNeuronsWeights()

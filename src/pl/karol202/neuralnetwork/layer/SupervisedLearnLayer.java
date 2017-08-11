@@ -1,5 +1,6 @@
 package pl.karol202.neuralnetwork.layer;
 
+import pl.karol202.neuralnetwork.activation.Activation;
 import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
 
 public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
@@ -7,6 +8,12 @@ public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
 	public SupervisedLearnLayer(SupervisedLearnNeuron[] neurons)
 	{
 		super(neurons);
+	}
+	
+	public SupervisedLearnLayer(int neurons, int inputs, Activation activation)
+	{
+		super(new SupervisedLearnNeuron[neurons]);
+		for(int i = 0; i < neurons; i++) this.neurons[i] = new SupervisedLearnNeuron(inputs, activation);
 	}
 	
 	public float[] calcErrorsUsingBackpropagation(SupervisedLearnLayer nextLayer)
