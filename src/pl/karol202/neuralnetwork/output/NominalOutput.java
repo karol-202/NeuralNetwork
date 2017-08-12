@@ -53,7 +53,7 @@ public class NominalOutput<T> implements OutputType<T>
 	public T transformOutput(float[] output)
 	{
 		return IntStream.range(0, output.length).mapToObj(i -> new OutputPair<>(output[i], outputFunction.apply(i)))
-				.filter(p -> p.getValue() > threshold).sorted().limit(2)
+				.filter(p -> p.getValue() >= threshold).sorted().limit(2)
 				.reduce((p1, p2) -> p1.getValue() - minDistance > p2.getValue() ? p1 : new OutputPair<>(0f, null))
 				.orElse(new OutputPair<>(0f, null)).getOutput();
 	}

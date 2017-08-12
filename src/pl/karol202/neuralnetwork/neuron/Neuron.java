@@ -33,7 +33,7 @@ public abstract class Neuron
 		for(int i = 0; i < weights.length; i++)
 		{
 			float weight;
-			do weight = (random.nextFloat() * range) - (range / 2);
+			do weight = (random.nextFloat() * range) + minValue;
 			while(weight == 0);
 			weights[i] = weight;
 		}

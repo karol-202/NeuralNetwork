@@ -2,7 +2,7 @@ package pl.karol202.neuralnetwork.neuron;
 
 import pl.karol202.neuralnetwork.activation.Activation;
 
-public class KohonenNeuron extends Neuron
+public abstract class KohonenNeuron extends Neuron
 {
 	private NeuronPosition position;
 	
@@ -13,6 +13,16 @@ public class KohonenNeuron extends Neuron
 		super(inputs, activation);
 		this.position = position;
 	}
+	
+	//Use initWeights() instead.
+	@Deprecated
+	@Override
+	public void randomWeights(float minValue, float maxValue)
+	{
+		super.randomWeights(minValue, maxValue);
+	}
+	
+	public abstract void initWeights();
 	
 	@Override
 	public void learn(float learnRate, float momentum)
@@ -31,6 +41,6 @@ public class KohonenNeuron extends Neuron
 	
 	public void updateNeighbourhood(NeuronPosition winner, float neighbourhoodRadius)
 	{
-		neighbourhoodMultiplier = (float) Math.exp(-Math.pow(position.getDistance(winner), 2) / (2 * Math.pow(neighbourhoodRadius, 1)));
+		neighbourhoodMultiplier = (float) Math.exp(-Math.pow(position.getDistance(winner), 2) / (2 * Math.pow(neighbourhoodRadius, 2)));
 	}
 }

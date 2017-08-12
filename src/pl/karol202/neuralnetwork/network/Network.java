@@ -14,8 +14,8 @@ public abstract class Network<O, L extends Layer, V extends Vector>
 {
 	L[] layers;
 	float learnRate;
-	private float momentum;
-	private OutputType<O> outputType;
+	float momentum;
+	OutputType<O> outputType;
 
 	float[] outputs;
 
