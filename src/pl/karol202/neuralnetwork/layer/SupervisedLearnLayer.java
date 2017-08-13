@@ -3,6 +3,8 @@ package pl.karol202.neuralnetwork.layer;
 import pl.karol202.neuralnetwork.activation.Activation;
 import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
 
+import java.util.stream.Stream;
+
 public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
 {
 	public SupervisedLearnLayer(SupervisedLearnNeuron[] neurons)
@@ -14,6 +16,11 @@ public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
 	{
 		super(new SupervisedLearnNeuron[neurons]);
 		for(int i = 0; i < neurons; i++) this.neurons[i] = new SupervisedLearnNeuron(inputs, activation);
+	}
+	
+	public void randomWeights(float minValue, float maxValue)
+	{
+		Stream.of(neurons).parallel().forEach(n -> n.randomWeights(minValue, maxValue));
 	}
 	
 	public float[] calcErrorsUsingBackpropagation(SupervisedLearnLayer nextLayer)

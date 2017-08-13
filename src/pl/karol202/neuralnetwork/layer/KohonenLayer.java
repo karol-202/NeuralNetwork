@@ -14,7 +14,7 @@ public abstract class KohonenLayer<N extends KohonenNeuron> extends Layer<N>
 	
 	private NeuronPosition winnerPosition;
 	
-	public KohonenLayer(N[] neurons, int[] dimensions)
+	KohonenLayer(N[] neurons, int[] dimensions)
 	{
 		super(neurons);
 		this.dimensions = dimensions;
@@ -52,15 +52,10 @@ public abstract class KohonenLayer<N extends KohonenNeuron> extends Layer<N>
 		return neurons[neuron];
 	}
 	
-	//Use initWeights() instead.
-	@Deprecated
-	@Override
-	public void randomWeights(float minValue, float maxValue)
+	public void initWeights()
 	{
-		super.randomWeights(minValue, maxValue);
+		Stream.of(neurons).parallel().forEach(KohonenNeuron::initWeights);
 	}
-	
-	public abstract void initWeights();
 	
 	@Override
 	public float[] calc(float[] inputs)

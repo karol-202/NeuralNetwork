@@ -9,6 +9,7 @@ public class KohonenNeuronWithConvexCombination extends KohonenNeuron
 		super(position, inputs, activation);
 	}
 	
+	@Override
 	public void initWeights()
 	{
 		float value = (float) Math.sqrt(1f / getInputsLength());

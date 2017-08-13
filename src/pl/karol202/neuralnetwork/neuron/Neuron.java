@@ -26,7 +26,7 @@ public abstract class Neuron
 		this.previousWeightsDelta = new float[weights.length];
 	}
 
-	public void randomWeights(float minValue, float maxValue)
+	void randomWeights(float minValue, float maxValue)
 	{
 		Random random = new Random();
 		float range = maxValue - minValue;

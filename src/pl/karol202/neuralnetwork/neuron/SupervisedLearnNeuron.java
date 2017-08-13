@@ -12,6 +12,12 @@ public class SupervisedLearnNeuron extends Neuron
 	}
 	
 	@Override
+	public void randomWeights(float minValue, float maxValue)
+	{
+		super.randomWeights(minValue, maxValue);
+	}
+	
+	@Override
 	public void learn(float learnRate, float momentum)
 	{
 		for(int i = 0; i < inputs.length; i++)

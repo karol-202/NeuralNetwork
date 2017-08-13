@@ -10,6 +10,12 @@ public class UnsupervisedLearnNeuron extends Neuron
 	}
 	
 	@Override
+	public void randomWeights(float minValue, float maxValue)
+	{
+		super.randomWeights(minValue, maxValue);
+	}
+	
+	@Override
 	public void learn(float learnRate, float momentum)
 	{
 		if(output < 0.2f) output *= 0.3f;

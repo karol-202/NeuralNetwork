@@ -1,10 +1,7 @@
 package pl.karol202.neuralnetwork.layer;
 
 import pl.karol202.neuralnetwork.activation.Activation;
-import pl.karol202.neuralnetwork.neuron.KohonenNeuron;
 import pl.karol202.neuralnetwork.neuron.KohonenNeuronWithConvexCombination;
-
-import java.util.stream.Stream;
 
 public class KohonenLayerWithConvexCombination extends KohonenLayer<KohonenNeuronWithConvexCombination>
 {
@@ -20,11 +17,6 @@ public class KohonenLayerWithConvexCombination extends KohonenLayer<KohonenNeuro
 		this.convexCombinationRate = 0;
 		this.combinationRateStep = combinationRateStep;
 		this.initialInputValue = (float) Math.sqrt(1f / inputs);
-	}
-	
-	public void initWeights()
-	{
-		Stream.of(neurons).parallel().forEach(KohonenNeuron::initWeights);
 	}
 	
 	@Override

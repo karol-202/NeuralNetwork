@@ -2,7 +2,7 @@ package pl.karol202.kohonencolors;
 
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
 import pl.karol202.neuralnetwork.layer.StandardKohonenLayer;
-import pl.karol202.neuralnetwork.network.KohonenNetwork;
+import pl.karol202.neuralnetwork.network.BasicKohonenNetwork;
 import pl.karol202.neuralnetwork.vector.Vector;
 
 import javax.swing.*;
@@ -48,7 +48,17 @@ public class FrameMain extends JFrame
 		}
 	}
 	
-	private KohonenNetwork<Vector> network;
+	private static final float INITIAL_LEARN_RATE = 0.05f;
+	private static final float LEARN_RATE_LOSS = 0.9999f;
+	private static final float MIN_LEARN_RATE = 0.001f;
+	
+	private static final float MOMENTUM = 0f;
+	
+	private static final float INITIAL_NEIGHBOURHOOD = 5f;
+	private static final float NEIGHBOURHOOD_LOSS = 0.99999f;
+	private static final float MIN_NEIGHBOURHOOD = 1f;
+	
+	private BasicKohonenNetwork<Vector> network;
 	private LearnRunnable learnRunnable;
 	
 	private PanelColors panelColors;
@@ -71,10 +81,11 @@ public class FrameMain extends JFrame
 	private void createNetwork()
 	{
 		StandardKohonenLayer layer = new StandardKohonenLayer(new int[] { 30, 30 }, 3, new ActivationLinear());
-		network = new KohonenNetwork<>(layer, 0.05f, 0f);
+		network = new BasicKohonenNetwork<>(layer);
 		network.initWeights();
-		network.setLearnRate(0.05f, 0.9999f, 0.001f);
-		network.setNeighbourhood(5, 0.99999f, 1);
+		network.setLearnRate(INITIAL_LEARN_RATE, LEARN_RATE_LOSS, MIN_LEARN_RATE);
+		network.setMomentum(MOMENTUM);
+		network.setNeighbourhood(INITIAL_NEIGHBOURHOOD, NEIGHBOURHOOD_LOSS, MIN_NEIGHBOURHOOD);
 	}
 	
 	private void setFrameParams()
@@ -126,8 +137,9 @@ public class FrameMain extends JFrame
 	private void reset()
 	{
 		network.initWeights();
-		network.setLearnRate(0.05f, 0.9999f, 0.001f);
-		network.setNeighbourhood(5, 0.99999f, 1);
+		network.setLearnRate(INITIAL_LEARN_RATE, LEARN_RATE_LOSS, MIN_LEARN_RATE);
+		network.setMomentum(MOMENTUM);
+		network.setNeighbourhood(INITIAL_NEIGHBOURHOOD, NEIGHBOURHOOD_LOSS, MIN_NEIGHBOURHOOD);
 		panelColors.repaint();
 	}
 	

@@ -19,11 +19,6 @@ public abstract class Layer<N extends Neuron>
 		this.neurons = neurons;
 	}
 
-	public void randomWeights(float minValue, float maxValue)
-	{
-		Stream.of(neurons).parallel().forEach(n -> n.randomWeights(minValue, maxValue));
-	}
-
 	public float[] calc(float[] inputs)
 	{
 		return Utils.unboxFloatArray(IntStream.range(0, neurons.length).parallel()

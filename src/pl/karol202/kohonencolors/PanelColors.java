@@ -10,9 +10,9 @@ import java.awt.image.WritableRaster;
 
 class PanelColors extends JPanel
 {
-	private KohonenNetwork<?> network;
+	private KohonenNetwork<?, ?, ?> network;
 	
-	PanelColors(KohonenNetwork<?> network)
+	PanelColors(KohonenNetwork<?, ?, ?> network)
 	{
 		this.network = network;
 	}

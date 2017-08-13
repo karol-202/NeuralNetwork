@@ -27,11 +27,6 @@ public abstract class Network<O, L extends Layer, V extends Vector>
 		this.outputType = outputType;
 	}
 
-	public void randomWeights(float minValue, float maxValue)
-	{
-		Stream.of(layers).parallel().forEach(l -> l.randomWeights(minValue, maxValue));
-	}
-
 	float[] calc(float[] inputs)
 	{
 		outputs = inputs;

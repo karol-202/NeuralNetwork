@@ -8,18 +8,10 @@ public abstract class KohonenNeuron extends Neuron
 	
 	private float neighbourhoodMultiplier;
 	
-	public KohonenNeuron(NeuronPosition position, int inputs, Activation activation)
+	KohonenNeuron(NeuronPosition position, int inputs, Activation activation)
 	{
 		super(inputs, activation);
 		this.position = position;
-	}
-	
-	//Use initWeights() instead.
-	@Deprecated
-	@Override
-	public void randomWeights(float minValue, float maxValue)
-	{
-		super.randomWeights(minValue, maxValue);
 	}
 	
 	public abstract void initWeights();

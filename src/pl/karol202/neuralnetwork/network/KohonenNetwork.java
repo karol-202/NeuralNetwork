@@ -1,28 +1,22 @@
 package pl.karol202.neuralnetwork.network;
 
 import pl.karol202.neuralnetwork.layer.KohonenLayer;
+import pl.karol202.neuralnetwork.layer.Layer;
 import pl.karol202.neuralnetwork.neuron.NeuronPosition;
-import pl.karol202.neuralnetwork.output.WinnerPositionOutput;
+import pl.karol202.neuralnetwork.output.OutputType;
 import pl.karol202.neuralnetwork.vector.Vector;
 
-import java.util.stream.Stream;
-
-public class KohonenNetwork<V extends Vector> extends Network<NeuronPosition, KohonenLayer, V>
+public abstract class KohonenNetwork<O, L extends Layer, V extends Vector> extends Network<O, L, V>
 {
 	private float learnRateLoss;
 	private float learnRateMin;
 	
-	public KohonenNetwork(KohonenLayer layer, float learnRate, float momentum)
+	KohonenNetwork(L[] layers, OutputType<O> outputType)
 	{
-		super(new KohonenLayer[] { layer }, learnRate, momentum, null);
-		this.outputType = new WinnerPositionOutput(this);
-		this.learnRateLoss = 1f;
+		super(layers, 0f, 0f, outputType);
 	}
 	
-	public void initWeights()
-	{
-		Stream.of(layers).parallel().forEach(KohonenLayer::initWeights);
-	}
+	public abstract KohonenLayer getKohonenLayer();
 	
 	@Override
 	void learn()
@@ -31,7 +25,7 @@ public class KohonenNetwork<V extends Vector> extends Network<NeuronPosition, Ko
 		updateLearnRate();
 	}
 	
-	private void updateLearnRate()
+	void updateLearnRate()
 	{
 		if(learnRate <= learnRateMin) return;
 		learnRate *= learnRateLoss;
@@ -45,18 +39,23 @@ public class KohonenNetwork<V extends Vector> extends Network<NeuronPosition, Ko
 		this.learnRateMin = learnRateMin;
 	}
 	
+	public void setMomentum(float momentum)
+	{
+		this.momentum = momentum;
+	}
+	
 	public void setNeighbourhood(float neighbourhoodRadius, float neighbourhoodRadiusLoss, float neighbourhoodRadiusMin)
 	{
-		layers[0].setNeighbourhood(neighbourhoodRadius, neighbourhoodRadiusLoss, neighbourhoodRadiusMin);
+		getKohonenLayer().setNeighbourhood(neighbourhoodRadius, neighbourhoodRadiusLoss, neighbourhoodRadiusMin);
 	}
 	
 	public NeuronPosition getWinnerPosition()
 	{
-		return layers[0].getWinnerPosition();
+		return getKohonenLayer().getWinnerPosition();
 	}
 	
 	public float[] getNeuronWeights(NeuronPosition position)
 	{
-		return layers[0].getNeuronWeights(position);
+		return getKohonenLayer().getNeuronWeights(position);
 	}
 }

@@ -4,6 +4,8 @@ import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
 import pl.karol202.neuralnetwork.output.OutputType;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
+import java.util.stream.Stream;
+
 public class SupervisedLearnNetwork<O, V extends SupervisedLearnVector> extends Network<O, SupervisedLearnLayer, V>
 {
 	private float[] errors;
@@ -11,6 +13,11 @@ public class SupervisedLearnNetwork<O, V extends SupervisedLearnVector> extends 
 	public SupervisedLearnNetwork(SupervisedLearnLayer[] layers, float learnRate, float momentum, OutputType<O> outputType)
 	{
 		super(layers, learnRate, momentum, outputType);
+	}
+	
+	public void randomWeights(float minValue, float maxValue)
+	{
+		Stream.of(layers).parallel().forEach(l -> l.randomWeights(minValue, maxValue));
 	}
 	
 	private float[] calcErrors(float[] valid)
