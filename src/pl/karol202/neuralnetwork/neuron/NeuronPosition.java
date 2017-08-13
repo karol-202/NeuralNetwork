@@ -1,5 +1,7 @@
 package pl.karol202.neuralnetwork.neuron;
 
+import java.util.Arrays;
+
 public class NeuronPosition
 {
 	private int[] coords;
@@ -7,6 +9,23 @@ public class NeuronPosition
 	public NeuronPosition(int... coords)
 	{
 		this.coords = coords;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if(this == o) return true;
+		if(o == null || getClass() != o.getClass()) return false;
+		
+		NeuronPosition that = (NeuronPosition) o;
+		
+		return Arrays.equals(coords, that.coords);
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Arrays.hashCode(coords);
 	}
 	
 	float getDistance(NeuronPosition other)

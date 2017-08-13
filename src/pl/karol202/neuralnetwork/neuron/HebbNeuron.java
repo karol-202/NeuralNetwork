@@ -2,11 +2,9 @@ package pl.karol202.neuralnetwork.neuron;
 
 import pl.karol202.neuralnetwork.activation.Activation;
 
-public class SupervisedLearnNeuron extends Neuron
+public class HebbNeuron extends Neuron
 {
-	private float transformedError;
-	
-	public SupervisedLearnNeuron(int inputs, Activation activation)
+	public HebbNeuron(int inputs, Activation activation)
 	{
 		super(inputs, activation);
 	}
@@ -20,35 +18,20 @@ public class SupervisedLearnNeuron extends Neuron
 	@Override
 	public void learn(float learnRate, float momentum)
 	{
+		if(output < 0.2f) output *= 0.3f;
+		if(output < 0) output *= 0.1f;
 		for(int i = 0; i < inputs.length; i++)
 		{
-			float weightDelta = learnRate * inputs[i] * transformedError;
+			float weightDelta = learnRate * output * (inputs[i] - weights[i]);
 			float weightInertia = previousWeightsDelta[i] * momentum;
 			weights[i] += weightDelta + weightInertia;
 			previousWeightsDelta[i] = weightDelta + weightInertia;
 		}
-		float weightDelta = learnRate * transformedError;
+		/*float weightDelta = learnRate * output * (1 - weights[inputs.length]);
 		float weightInertia = previousWeightsDelta[inputs.length] * momentum;
 		weights[inputs.length] += weightDelta + weightInertia;
-		previousWeightsDelta[inputs.length] = weightDelta + weightInertia;
+		previousWeightsDelta[inputs.length] = weightDelta + weightInertia;*/
 		
 		clear();
-	}
-	
-	@Override
-	protected void clear()
-	{
-		super.clear();
-		transformedError = 0f;
-	}
-	
-	public float getError()
-	{
-		return transformedError;
-	}
-	
-	public void setError(float error)
-	{
-		transformedError = error * activation.calcDerivative(output);
 	}
 }

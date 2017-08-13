@@ -1,16 +1,16 @@
 package pl.karol202.neuralnetwork.layer;
 
 import pl.karol202.neuralnetwork.activation.Activation;
-import pl.karol202.neuralnetwork.neuron.UnsupervisedLearnNeuron;
+import pl.karol202.neuralnetwork.neuron.HebbNeuron;
 
 import java.util.stream.Stream;
 
-public class UnsupervisedLearnLayer extends Layer<UnsupervisedLearnNeuron>
+public class HebbLayer extends Layer<HebbNeuron>
 {
-	public UnsupervisedLearnLayer(int neurons, int inputs, Activation activation)
+	public HebbLayer(int neurons, int inputs, Activation activation)
 	{
-		super(new UnsupervisedLearnNeuron[neurons]);
-		for(int i = 0; i < neurons; i++) this.neurons[i] = new UnsupervisedLearnNeuron(inputs, activation);
+		super(new HebbNeuron[neurons]);
+		for(int i = 0; i < neurons; i++) this.neurons[i] = new HebbNeuron(inputs, activation);
 	}
 	
 	public void randomWeights(float minValue, float maxValue)

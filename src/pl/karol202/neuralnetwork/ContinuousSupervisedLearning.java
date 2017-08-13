@@ -1,12 +1,13 @@
 package pl.karol202.neuralnetwork;
 
-import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.network.DeltaNetwork;
+import pl.karol202.neuralnetwork.network.Network;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ContinuousSupervisedLearning<V extends SupervisedLearnVector> implements Runnable
+public class ContinuousSupervisedLearning<N extends Network<?, ?, V> & DeltaNetwork<V>, V extends SupervisedLearnVector> implements Runnable
 {
 	public interface LearningListener
 	{
@@ -17,7 +18,7 @@ public class ContinuousSupervisedLearning<V extends SupervisedLearnVector> imple
 		void onLearningEnded();
 	}
 	
-	private SupervisedLearnNetwork<?, V> network;
+	private N network;
 	private LearningListener listener;
 	
 	private List<V> vectors;
@@ -25,7 +26,7 @@ public class ContinuousSupervisedLearning<V extends SupervisedLearnVector> imple
 	private boolean learning;
 	private boolean stop;
 	
-	public ContinuousSupervisedLearning(SupervisedLearnNetwork<?, V> network, LearningListener listener)
+	public ContinuousSupervisedLearning(N network, LearningListener listener)
 	{
 		this.network = network;
 		this.listener = listener;

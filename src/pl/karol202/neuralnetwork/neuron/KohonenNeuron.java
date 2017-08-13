@@ -33,6 +33,7 @@ public abstract class KohonenNeuron extends Neuron
 	
 	public void updateNeighbourhood(NeuronPosition winner, float neighbourhoodRadius)
 	{
-		neighbourhoodMultiplier = (float) Math.exp(-Math.pow(position.getDistance(winner), 2) / (2 * Math.pow(neighbourhoodRadius, 2)));
+		if(neighbourhoodRadius == 0) neighbourhoodMultiplier = position.equals(winner) ? 1 : 0;
+		else neighbourhoodMultiplier = (float) Math.exp(-Math.pow(position.getDistance(winner), 2) / (2 * Math.pow(neighbourhoodRadius, 2)));
 	}
 }

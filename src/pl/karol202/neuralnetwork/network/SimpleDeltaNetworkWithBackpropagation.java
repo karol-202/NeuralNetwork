@@ -1,16 +1,17 @@
 package pl.karol202.neuralnetwork.network;
 
-import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
+import pl.karol202.neuralnetwork.layer.SimpleDeltaLayerWithBackpropagation;
 import pl.karol202.neuralnetwork.output.OutputType;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
 import java.util.stream.Stream;
 
-public class SupervisedLearnNetwork<O, V extends SupervisedLearnVector> extends Network<O, SupervisedLearnLayer, V>
+public class SimpleDeltaNetworkWithBackpropagation<O, V extends SupervisedLearnVector>
+		extends Network<O, SimpleDeltaLayerWithBackpropagation, V> implements DeltaNetwork<V>
 {
 	private float[] errors;
 	
-	public SupervisedLearnNetwork(SupervisedLearnLayer[] layers, float learnRate, float momentum, OutputType<O> outputType)
+	public SimpleDeltaNetworkWithBackpropagation(SimpleDeltaLayerWithBackpropagation[] layers, float learnRate, float momentum, OutputType<O> outputType)
 	{
 		super(layers, learnRate, momentum, outputType);
 	}
@@ -20,13 +21,21 @@ public class SupervisedLearnNetwork<O, V extends SupervisedLearnVector> extends 
 		Stream.of(layers).parallel().forEach(l -> l.randomWeights(minValue, maxValue));
 	}
 	
+	@Override
+	public void learnVector(V vector)
+	{
+		calc(vector.getInputs());
+		errors = calcErrors(vector.getReqOutputs());
+		learn();
+	}
+	
 	private float[] calcErrors(float[] valid)
 	{
 		float[] networkErrors = new float[valid.length];
-		SupervisedLearnLayer nextLayer = null;
+		SimpleDeltaLayerWithBackpropagation nextLayer = null;
 		for(int i = layers.length - 1; i >= 0; i--)
 		{
-			SupervisedLearnLayer layer = layers[i];
+			SimpleDeltaLayerWithBackpropagation layer = layers[i];
 			float[] errors = new float[layer.getSize()];
 			if(i == layers.length - 1)
 			{
@@ -39,13 +48,6 @@ public class SupervisedLearnNetwork<O, V extends SupervisedLearnVector> extends 
 			nextLayer = layer;
 		}
 		return networkErrors;
-	}
-	
-	public void learnVector(V vector)
-	{
-		calc(vector.getInputs());
-		errors = calcErrors(vector.getReqOutputs());
-		learn();
 	}
 	
 	public float[] getErrors()

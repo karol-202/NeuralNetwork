@@ -5,8 +5,8 @@ import pl.karol202.neuralnetwork.ContinuousSupervisedLearning.LearningListener;
 import pl.karol202.neuralnetwork.ContinuousTesting;
 import pl.karol202.neuralnetwork.NetworkLoader;
 import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
-import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
-import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.layer.SimpleDeltaLayerWithBackpropagation;
+import pl.karol202.neuralnetwork.network.SimpleDeltaNetworkWithBackpropagation;
 import pl.karol202.neuralnetwork.output.NominalOutput;
 
 import java.io.File;
@@ -36,8 +36,8 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	private List<DigitVector> trainVectors;
 	private List<DigitVector> testVectors;
 	
-	private SupervisedLearnNetwork<Integer, DigitVector> network;
-	private ContinuousSupervisedLearning<DigitVector> learning;
+	private SimpleDeltaNetworkWithBackpropagation<Integer, DigitVector> network;
+	private ContinuousSupervisedLearning<SimpleDeltaNetworkWithBackpropagation<?, DigitVector>, DigitVector> learning;
 	private ContinuousTesting<DigitVector, Integer> testing;
 	
 	private File networkFile;
@@ -78,14 +78,14 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 		waitForInput();
 	}
 	
-	private SupervisedLearnNetwork<Integer, DigitVector> createNetwork()
+	private SimpleDeltaNetworkWithBackpropagation<Integer, DigitVector> createNetwork()
 	{
 		int inputs = trainImageLoader.getWidth() * trainImageLoader.getHeight();
 		
-		SupervisedLearnLayer hiddenLayer = new SupervisedLearnLayer(300, inputs, new ActivationSigmoidal(1.2f));
-		SupervisedLearnLayer outputLayer = new SupervisedLearnLayer(10, 300, new ActivationSigmoidal(1.2f));
+		SimpleDeltaLayerWithBackpropagation hiddenLayer = new SimpleDeltaLayerWithBackpropagation(300, inputs, new ActivationSigmoidal(1.2f));
+		SimpleDeltaLayerWithBackpropagation outputLayer = new SimpleDeltaLayerWithBackpropagation(10, 300, new ActivationSigmoidal(1.2f));
 		
-		return new SupervisedLearnNetwork<>(new SupervisedLearnLayer[] { hiddenLayer, outputLayer }, INITIAL_LEARN_RATE,
+		return new SimpleDeltaNetworkWithBackpropagation<>(new SimpleDeltaLayerWithBackpropagation[] { hiddenLayer, outputLayer }, INITIAL_LEARN_RATE,
 											INITIAL_MOMENTUM, new NominalOutput<>(i -> i, 0.7f));
 	}
 	

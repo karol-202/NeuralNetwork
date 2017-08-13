@@ -3,7 +3,7 @@ package pl.karol202.neuroncmd;
 import pl.karol202.neuralnetwork.ContinuousSupervisedLearning;
 import pl.karol202.neuralnetwork.ContinuousSupervisedLearning.LearningListener;
 import pl.karol202.neuralnetwork.NetworkLoader;
-import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.network.SimpleDeltaNetworkWithBackpropagation;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 import pl.karol202.neuralnetwork.vector.Vector;
 
@@ -23,8 +23,8 @@ public class Main implements LearningListener
 	private static final String PATH_VECTORS = "res/neuroncmd/vectors.dat";
 	private static final String PATH_DATA = "res/neuroncmd/data.dat";
 
-	private SupervisedLearnNetwork<float[], SupervisedLearnVector> network;
-	private ContinuousSupervisedLearning<SupervisedLearnVector> learning;
+	private SimpleDeltaNetworkWithBackpropagation<float[], SupervisedLearnVector> network;
+	private ContinuousSupervisedLearning<SimpleDeltaNetworkWithBackpropagation<?, SupervisedLearnVector>, SupervisedLearnVector> learning;
 	
 	private File dataFile;
 	private NetworkLoader networkLoader;

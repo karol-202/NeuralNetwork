@@ -1,16 +1,16 @@
 package pl.karol202.neuralnetwork.network;
 
-import pl.karol202.neuralnetwork.layer.UnsupervisedLearnLayer;
+import pl.karol202.neuralnetwork.layer.HebbLayer;
 import pl.karol202.neuralnetwork.output.OutputType;
 import pl.karol202.neuralnetwork.vector.Vector;
 
 import java.util.stream.Stream;
 
-public class UnsupervisedLearnNetwork<O, V extends Vector> extends Network<O, UnsupervisedLearnLayer, V>
+public class HebbNetwork<O, V extends Vector> extends Network<O, HebbLayer, V>
 {
-	public UnsupervisedLearnNetwork(UnsupervisedLearnLayer layer, float learnRate, float momentum, OutputType<O> outputType)
+	public HebbNetwork(HebbLayer layer, float learnRate, float momentum, OutputType<O> outputType)
 	{
-		super(new UnsupervisedLearnLayer[] { layer }, learnRate, momentum, outputType);
+		super(new HebbLayer[] { layer }, learnRate, momentum, outputType);
 	}
 	
 	public void randomWeights(float minValue, float maxValue)

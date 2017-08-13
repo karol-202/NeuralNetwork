@@ -4,9 +4,9 @@ import pl.karol202.neuralnetwork.activation.Activation;
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
 import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
 import pl.karol202.neuralnetwork.activation.ActivationTangensoidal;
-import pl.karol202.neuralnetwork.layer.SupervisedLearnLayer;
-import pl.karol202.neuralnetwork.network.SupervisedLearnNetwork;
-import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
+import pl.karol202.neuralnetwork.layer.SimpleDeltaLayerWithBackpropagation;
+import pl.karol202.neuralnetwork.network.SimpleDeltaNetworkWithBackpropagation;
+import pl.karol202.neuralnetwork.neuron.SimpleDeltaNeuron;
 import pl.karol202.neuralnetwork.output.RawOutput;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
@@ -32,7 +32,7 @@ class NeuronSave
 		NONE, VECTORS, VECTOR, INPUT, REQ_OUTPUT
 	}
 	
-	static SupervisedLearnNetwork<float[], SupervisedLearnVector> loadNetwork(String file) throws XMLStreamException, FileNotFoundException
+	static SimpleDeltaNetworkWithBackpropagation<float[], SupervisedLearnVector> loadNetwork(String file) throws XMLStreamException, FileNotFoundException
 	{
 		FileInputStream fis = new FileInputStream(file);
 		XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(fis);
@@ -40,9 +40,9 @@ class NeuronSave
 		NetworkRS state = NetworkRS.NONE;
 		float learnRatio = 0f;
 		float momentum = 0f;
-		ArrayList<SupervisedLearnLayer> layers = null;
+		ArrayList<SimpleDeltaLayerWithBackpropagation> layers = null;
 		int layerInputs = 0;
-		ArrayList<SupervisedLearnNeuron> layerNeurons = null;
+		ArrayList<SimpleDeltaNeuron> layerNeurons = null;
 		int neuronInputs = 0;
 		String activationType = "";
 		Activation activation = null;
@@ -139,16 +139,16 @@ class NeuronSave
 				{
 					if(state != NetworkRS.NETWORK)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: network");
-					SupervisedLearnLayer[] layerArray = layers.toArray(new SupervisedLearnLayer[layers.size()]);
-					return new SupervisedLearnNetwork<>(layerArray, learnRatio, momentum, new RawOutput());
+					SimpleDeltaLayerWithBackpropagation[] layerArray = layers.toArray(new SimpleDeltaLayerWithBackpropagation[layers.size()]);
+					return new SimpleDeltaNetworkWithBackpropagation<>(layerArray, learnRatio, momentum, new RawOutput());
 				}
 				else if(endElement.getName().toString().equals("layer"))
 				{
 					if(state != NetworkRS.LAYER)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowe położenie elementu końcowego: layer");
 					state = NetworkRS.NETWORK;
-					SupervisedLearnNeuron[] neurons = layerNeurons.toArray(new SupervisedLearnNeuron[layerNeurons.size()]);
-					SupervisedLearnLayer layer = new SupervisedLearnLayer(neurons);
+					SimpleDeltaNeuron[] neurons = layerNeurons.toArray(new SimpleDeltaNeuron[layerNeurons.size()]);
+					SimpleDeltaLayerWithBackpropagation layer = new SimpleDeltaLayerWithBackpropagation(neurons);
 					layers.add(layer);
 					layerInputs = neurons.length;
 				}
@@ -159,7 +159,7 @@ class NeuronSave
 					state = NetworkRS.LAYER;
 					if(neuronInputs != layerInputs)
 						throw new RuntimeException("Błąd parsowania pliku: nieprawidłowa ilość wag neuronu");
-					SupervisedLearnNeuron neuron = new SupervisedLearnNeuron(neuronInputs, activation);
+					SimpleDeltaNeuron neuron = new SimpleDeltaNeuron(neuronInputs, activation);
 					layerNeurons.add(neuron);
 				}
 				else if(endElement.getName().toString().equals("activation"))

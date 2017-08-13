@@ -1,6 +1,6 @@
 package pl.karol202.selflearnexample;
 
-import pl.karol202.neuralnetwork.network.UnsupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.network.HebbNetwork;
 import pl.karol202.neuralnetwork.vector.Vector;
 
 import javax.swing.*;
@@ -12,11 +12,11 @@ public class PanelNeurons extends JPanel
 	private static final int NEURON_SIZE = 4;
 	private static final int VECTOR_SIZE = 6;
 	
-	private UnsupervisedLearnNetwork<?, ?> network;
+	private HebbNetwork<?, ?> network;
 	private float[][] previousWeights;
 	private Vector learnVector;
 	
-	PanelNeurons(UnsupervisedLearnNetwork<?, ?> network)
+	PanelNeurons(HebbNetwork<?, ?> network)
 	{
 		this.network = network;
 		

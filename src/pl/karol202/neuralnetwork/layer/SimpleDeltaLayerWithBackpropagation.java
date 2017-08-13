@@ -1,21 +1,21 @@
 package pl.karol202.neuralnetwork.layer;
 
 import pl.karol202.neuralnetwork.activation.Activation;
-import pl.karol202.neuralnetwork.neuron.SupervisedLearnNeuron;
+import pl.karol202.neuralnetwork.neuron.SimpleDeltaNeuron;
 
 import java.util.stream.Stream;
 
-public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
+public class SimpleDeltaLayerWithBackpropagation extends Layer<SimpleDeltaNeuron>
 {
-	public SupervisedLearnLayer(SupervisedLearnNeuron[] neurons)
+	public SimpleDeltaLayerWithBackpropagation(SimpleDeltaNeuron[] neurons)
 	{
 		super(neurons);
 	}
 	
-	public SupervisedLearnLayer(int neurons, int inputs, Activation activation)
+	public SimpleDeltaLayerWithBackpropagation(int neurons, int inputs, Activation activation)
 	{
-		super(new SupervisedLearnNeuron[neurons]);
-		for(int i = 0; i < neurons; i++) this.neurons[i] = new SupervisedLearnNeuron(inputs, activation);
+		super(new SimpleDeltaNeuron[neurons]);
+		for(int i = 0; i < neurons; i++) this.neurons[i] = new SimpleDeltaNeuron(inputs, activation);
 	}
 	
 	public void randomWeights(float minValue, float maxValue)
@@ -23,7 +23,7 @@ public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
 		Stream.of(neurons).parallel().forEach(n -> n.randomWeights(minValue, maxValue));
 	}
 	
-	public float[] calcErrorsUsingBackpropagation(SupervisedLearnLayer nextLayer)
+	public float[] calcErrorsUsingBackpropagation(SimpleDeltaLayerWithBackpropagation nextLayer)
 	{
 		float[] errors = new float[neurons.length];
 		for(int i = 0; i < neurons.length; i++)
@@ -31,7 +31,7 @@ public class SupervisedLearnLayer extends Layer<SupervisedLearnNeuron>
 			float sum = 0f;
 			for(int j = 0; j < nextLayer.getSize(); j++)
 			{
-				SupervisedLearnNeuron n = nextLayer.neurons[j];
+				SimpleDeltaNeuron n = nextLayer.neurons[j];
 				sum += n.getError() * n.getWeight(i);
 			}
 			errors[i] = sum;

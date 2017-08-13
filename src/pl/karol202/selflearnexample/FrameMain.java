@@ -1,8 +1,8 @@
 package pl.karol202.selflearnexample;
 
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
-import pl.karol202.neuralnetwork.layer.UnsupervisedLearnLayer;
-import pl.karol202.neuralnetwork.network.UnsupervisedLearnNetwork;
+import pl.karol202.neuralnetwork.layer.HebbLayer;
+import pl.karol202.neuralnetwork.network.HebbNetwork;
 import pl.karol202.neuralnetwork.vector.Vector;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ public class FrameMain extends JFrame
 	private static final float INITIAL_LEARN_RATE = 0.05f;
 	private static final float INITIAL_MOMENTUM = 0f;
 	
-	private UnsupervisedLearnNetwork<?, Vector> network;
+	private HebbNetwork<?, Vector> network;
 	
 	private PanelNeurons panelNeurons;
 	private JButton buttonReset;
@@ -33,9 +33,9 @@ public class FrameMain extends JFrame
 	
 	private void createNetwork()
 	{
-		UnsupervisedLearnLayer layer = new UnsupervisedLearnLayer(30, 2, new ActivationLinear());
+		HebbLayer layer = new HebbLayer(30, 2, new ActivationLinear());
 		
-		network = new UnsupervisedLearnNetwork<>(layer, INITIAL_LEARN_RATE, INITIAL_MOMENTUM, null);
+		network = new HebbNetwork<>(layer, INITIAL_LEARN_RATE, INITIAL_MOMENTUM, null);
 		network.randomWeights(-1f, 1f);
 	}
 	
