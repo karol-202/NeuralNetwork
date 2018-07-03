@@ -36,6 +36,8 @@ public class KohonenLayerWithConvexCombination extends KohonenLayer<KohonenNeuro
 	public void learn(float learnRate, float momentum)
 	{
 		super.learn(learnRate, momentum);
+		if(convexCombinationRate >= 1f) return;
 		convexCombinationRate += combinationRateStep;
+		if(convexCombinationRate > 1f) convexCombinationRate = 1f;
 	}
 }

@@ -3,6 +3,7 @@ package pl.karol202.imagerecognition;
 import pl.karol202.neuralnetwork.ContinuousSupervisedLearning;
 import pl.karol202.neuralnetwork.ContinuousSupervisedLearning.LearningListener;
 import pl.karol202.neuralnetwork.ContinuousTesting;
+import pl.karol202.neuralnetwork.ContinuousTesting.TestingListener;
 import pl.karol202.neuralnetwork.NetworkLoader;
 import pl.karol202.neuralnetwork.activation.ActivationSigmoidal;
 import pl.karol202.neuralnetwork.layer.SimpleDeltaLayerWithBackpropagation;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Main implements LearningListener, ContinuousTesting.TestingListener<DigitVector, Integer>
+public class Main implements LearningListener<DigitVector>, TestingListener<DigitVector, Integer>
 {
 	private static final String PATH_TRAIN_IMAGES = "res/imagerecognition/Cyfry/train.images";
 	private static final String PATH_TRAIN_LABELS = "res/imagerecognition/Cyfry/train.labels";
@@ -165,7 +166,7 @@ public class Main implements LearningListener, ContinuousTesting.TestingListener
 	}
 	
 	@Override
-	public void onLearnedVector(float[] errors)
+	public void onLearnedVector(DigitVector vector, float[] errors)
 	{
 		//System.out.println("Błąd: " + errorsToStringArray(errors));
 	}

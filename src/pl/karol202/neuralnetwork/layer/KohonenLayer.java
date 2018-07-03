@@ -63,7 +63,7 @@ public abstract class KohonenLayer<N extends KohonenNeuron> extends Layer<N>
 		float[] rawOutput = super.calc(inputs);
 		
 		int winner = -1;
-		float winnerOutput = 0f;
+		float winnerOutput = -10f;
 		for(int i = 0; i < rawOutput.length; i++)
 		{
 			if(rawOutput[i] <= winnerOutput) continue;

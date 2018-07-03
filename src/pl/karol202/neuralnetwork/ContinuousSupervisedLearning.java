@@ -9,9 +9,9 @@ import java.util.List;
 
 public class ContinuousSupervisedLearning<N extends Network<?, ?, V> & DeltaNetwork<V>, V extends SupervisedLearnVector> implements Runnable
 {
-	public interface LearningListener
+	public interface LearningListener<V extends SupervisedLearnVector>
 	{
-		void onLearnedVector(float[] errors);
+		void onLearnedVector(V vector, float[] errors);
 		
 		void onLearnedEpoch(double meanSquareError, float highestError);
 		
@@ -19,14 +19,14 @@ public class ContinuousSupervisedLearning<N extends Network<?, ?, V> & DeltaNetw
 	}
 	
 	private N network;
-	private LearningListener listener;
+	private LearningListener<V> listener;
 	
 	private List<V> vectors;
 	private float maxError;
 	private boolean learning;
 	private boolean stop;
 	
-	public ContinuousSupervisedLearning(N network, LearningListener listener)
+	public ContinuousSupervisedLearning(N network, LearningListener<V> listener)
 	{
 		this.network = network;
 		this.listener = listener;
@@ -48,7 +48,6 @@ public class ContinuousSupervisedLearning<N extends Network<?, ?, V> & DeltaNetw
 		//double lastMeanSquareError = -1f;
 		while(learning && !stop)
 		{
-			long startTime = System.currentTimeMillis();
 			float[][] errors = new float[vectors.size()][network.getOutputsLength()];
 			float highestError = 0f;
 			learning = false;
@@ -57,9 +56,10 @@ public class ContinuousSupervisedLearning<N extends Network<?, ?, V> & DeltaNetw
 			for(int i = 0; i < vectors.size(); i++)
 			{
 				if(stop) break;
-				network.learnVector(vectors.get(i));
+				V vector = vectors.get(i);
+				network.learnVector(vector);
 				errors[i] = network.getErrors();
-				listener.onLearnedVector(errors[i]);
+				listener.onLearnedVector(vector, errors[i]);
 				for(int j = 0; j < errors[i].length; j++)
 				{
 					float abs = Math.abs(errors[i][j]);
@@ -80,7 +80,6 @@ public class ContinuousSupervisedLearning<N extends Network<?, ?, V> & DeltaNetw
 				else if(difference < 0) network.setLearnRate(network.getLearnRate() * 0.9f);
 			}
 			lastMeanSquareError = meanSquareError;*/
-			System.out.println("Czas: " + (System.currentTimeMillis() - startTime));
 		}
 		listener.onLearningEnded();
 		vectors = null;

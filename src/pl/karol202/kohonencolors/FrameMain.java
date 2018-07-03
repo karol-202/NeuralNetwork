@@ -1,7 +1,7 @@
 package pl.karol202.kohonencolors;
 
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
-import pl.karol202.neuralnetwork.layer.StandardKohonenLayer;
+import pl.karol202.neuralnetwork.layer.KohonenLayerWithConvexCombination;
 import pl.karol202.neuralnetwork.network.BasicKohonenNetwork;
 import pl.karol202.neuralnetwork.vector.Vector;
 
@@ -80,7 +80,7 @@ public class FrameMain extends JFrame
 	
 	private void createNetwork()
 	{
-		StandardKohonenLayer layer = new StandardKohonenLayer(new int[] { 30, 30 }, 3, new ActivationLinear());
+		KohonenLayerWithConvexCombination layer = new KohonenLayerWithConvexCombination(new int[] { 30, 30 }, 3, new ActivationLinear(), 0.01f);
 		network = new BasicKohonenNetwork<>(layer);
 		network.initWeights();
 		network.setLearnRate(INITIAL_LEARN_RATE, LEARN_RATE_LOSS, MIN_LEARN_RATE);

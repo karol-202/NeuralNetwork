@@ -1,8 +1,120 @@
 <?xml version="1.0" ?>
-<network inputs="2" learnRatio="0.1">
+<network inputs="22" learnRatio="0.1">
 	<layer>
-		<neuron inputs="2">
-			<activation type="tangensoidal">
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="22">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+	</layer>
+	<layer>
+		<neuron inputs="20">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="20">
+			<activation type="sigmoidal">
+				<alpha>1</alpha>
+			</activation>
+		</neuron>
+		<neuron inputs="20">
+			<activation type="sigmoidal">
 				<alpha>1</alpha>
 			</activation>
 		</neuron>

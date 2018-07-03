@@ -3,18 +3,19 @@ package pl.karol202.cptest;
 import pl.karol202.neuralnetwork.ContinuousSupervisedLearning;
 import pl.karol202.neuralnetwork.activation.ActivationLinear;
 import pl.karol202.neuralnetwork.layer.GrossbergLayer;
-import pl.karol202.neuralnetwork.layer.StandardKohonenLayer;
+import pl.karol202.neuralnetwork.layer.KohonenLayerWithConvexCombination;
+import pl.karol202.neuralnetwork.network.BasicKohonenNetwork;
 import pl.karol202.neuralnetwork.network.CounterPropagationNetwork;
-import pl.karol202.neuralnetwork.output.NominalOutput;
+import pl.karol202.neuralnetwork.neuron.NeuronPosition;
 import pl.karol202.neuralnetwork.vector.SupervisedLearnVector;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main implements ContinuousSupervisedLearning.LearningListener
+public class Main implements ContinuousSupervisedLearning.LearningListener<SupervisedLearnVector>
 {
-	private CounterPropagationNetwork<Integer, SupervisedLearnVector> network;
+	private BasicKohonenNetwork<SupervisedLearnVector> network;
 	private ContinuousSupervisedLearning<CounterPropagationNetwork<?, SupervisedLearnVector>, SupervisedLearnVector> learning;
 	private List<SupervisedLearnVector> vectors;
 	
@@ -31,27 +32,27 @@ public class Main implements ContinuousSupervisedLearning.LearningListener
 	
 	private void createNetwork()
 	{
-		StandardKohonenLayer kohonenLayer = new StandardKohonenLayer(new int[]{ 5 }, 2, new ActivationLinear());
+		KohonenLayerWithConvexCombination kohonenLayer = new KohonenLayerWithConvexCombination(new int[]{ 5 }, 2, new ActivationLinear(), 0.01f);
 		GrossbergLayer grossbergLayer = new GrossbergLayer(5, 5, new ActivationLinear());
-		network = new CounterPropagationNetwork<>(kohonenLayer, grossbergLayer, new NominalOutput<>(i -> i, 0.1f));
-		network.initWeights(-0.1f, 0.1f);
+		network = new BasicKohonenNetwork<>(kohonenLayer);
+		network.initWeights();
 		network.setLearnRate(0.05f, 0.9999f, 0.001f);
-		network.setGrossbergLearnRate(0.1f, 0.999f, 0.01f);
+		//network.setGrossbergLearnRate(0.1f, 0.999f, 0.01f);
 		network.setMomentum(0f);
-		network.setNeighbourhood(0f, 1f, 0f);
+		network.setNeighbourhood(1.5f, 0.999f, 0f);
 		
-		learning = new ContinuousSupervisedLearning<>(network, this);
+		//learning = new ContinuousSupervisedLearning<>(network, this);
 	}
 	
 	private void createVectors()
 	{
 		vectors = new ArrayList<>();
-		vectors.add(new SupervisedLearnVector(new float[] { 0,    0    }, new float[] { 1, 0, 0, 0, 0 }));
-		vectors.add(new SupervisedLearnVector(new float[] { 0.5f, 0    }, new float[] { 1, 0, 0, 0, 0 }));
-		vectors.add(new SupervisedLearnVector(new float[] { 0,    0.5f }, new float[] { 0, 1, 0, 0, 0 }));
+		vectors.add(new SupervisedLearnVector(new float[] { -1,    -1    }, new float[] { 1, 0, 0, 0, 0 }));
+		vectors.add(new SupervisedLearnVector(new float[] { 0f, -1    }, new float[] { 1, 0, 0, 0, 0 }));
+		vectors.add(new SupervisedLearnVector(new float[] { -1,    0 }, new float[] { 0, 1, 0, 0, 0 }));
 		vectors.add(new SupervisedLearnVector(new float[] { 1,    1    }, new float[] { 0, 0, 1, 0, 0 }));
-		vectors.add(new SupervisedLearnVector(new float[] { 0.5f, 1    }, new float[] { 0, 0, 0, 1, 0 }));
-		vectors.add(new SupervisedLearnVector(new float[] { 1,    0.5f }, new float[] { 0, 0, 0, 0, 1 }));
+		vectors.add(new SupervisedLearnVector(new float[] { 0, 1    }, new float[] { 0, 0, 0, 1, 0 }));
+		vectors.add(new SupervisedLearnVector(new float[] { 1,    0 }, new float[] { 0, 0, 0, 0, 1 }));
 	}
 	
 	private void run()
@@ -84,9 +85,17 @@ public class Main implements ContinuousSupervisedLearning.LearningListener
 	
 	private void learn()
 	{
-		learning.learn(vectors, 0.01f);
+		//learning.learn(vectors, 0.01f);
+		long t = System.currentTimeMillis();
+		while(System.currentTimeMillis() - t < 1000)
+		{
+			for(int i = 0; i < 6; i++)
+			{
+				network.learnVector(vectors.get(i));
+			}
+		}
 		scanner.nextLine();
-		learning.stopLearning();
+		//learning.stopLearning();
 	}
 	
 	private void test()
@@ -96,19 +105,31 @@ public class Main implements ContinuousSupervisedLearning.LearningListener
 		input[0] = scanner.nextFloat();
 		input[1] = scanner.nextFloat();
 		SupervisedLearnVector vector = new SupervisedLearnVector(input, null);
-		System.out.println("Wyjście: " + network.testVector(vector));
+		System.out.println("Wyjście: " + network.testVector(vector).getCoord(0));
+		scanner.nextLine();
 	}
 	
 	@Override
-	public void onLearnedVector(float[] errors)
+	public void onLearnedVector(SupervisedLearnVector vector, float[] errors)
 	{
+		//for(int i = 0; i < errors.length; i++) System.out.println((i + 1) + ":  " + errors[i]);
 		
+		//System.out.println(vector.getInputs()[0] + "   " + vector.getInputs()[1]);
+		//System.out.println(network.getKohonenLayer().getWinnerPosition().getCoord(0));
+		
+		for(int i = 0; i < 5; i++)
+		{
+			float[] w = network.getNeuronWeights(new NeuronPosition(i));
+			System.out.println(i + "   " + w[0] + "   " + w[1] + "   " + w[2]);
+		}
+		
+		System.out.println();
 	}
 	
 	@Override
 	public void onLearnedEpoch(double meanSquareError, float highestError)
 	{
-		System.out.println(meanSquareError);
+		
 	}
 	
 	@Override

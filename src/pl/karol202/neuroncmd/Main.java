@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class Main implements LearningListener
+public class Main implements LearningListener<SupervisedLearnVector>
 {
 	private static final float DST_ERROR = 0.01f;
 	private static final Logger LOGGER = NeuronLogging.LOGGER;
@@ -251,10 +251,10 @@ public class Main implements LearningListener
 	}
 	
 	@Override
-	public void onLearnedVector(float[] errors)
+	public void onLearnedVector(SupervisedLearnVector vector, float[] errors)
 	{
-		LOGGER.info("Błąd: " + NeuronLogging.floatArrayToString(errors));
-		System.out.println("Błąd: " + NeuronLogging.floatArrayToString(errors));
+		//LOGGER.info("Błąd: " + NeuronLogging.floatArrayToString(errors));
+		//System.out.println("Błąd: " + NeuronLogging.floatArrayToString(errors));
 		try
 		{
 			networkLoader.tryToSaveNetworkData(dataFile);
