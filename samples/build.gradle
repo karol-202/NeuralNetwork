@@ -1,0 +1,9 @@
+dependencies {
+    compile project(':neuralnetwork')
+}
+
+task(runNeuronCmd, dependsOn: 'classes', type: JavaExec) {
+    main = 'pl.karol202.neuralnetworksamples.neuroncmd.Main'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+}

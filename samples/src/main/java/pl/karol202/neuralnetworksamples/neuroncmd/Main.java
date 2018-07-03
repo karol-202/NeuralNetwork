@@ -18,10 +18,10 @@ public class Main implements LearningListener<SupervisedLearnVector>
 	private static final float DST_ERROR = 0.01f;
 	private static final Logger LOGGER = NeuronLogging.LOGGER;
 
-	private static final String PATH_LOG = "samples/res/neuroncmd/log.txt";
-	private static final String PATH_NETWORK = "samples/res/neuroncmd/neurons.dat";
-	private static final String PATH_VECTORS = "samples/res/neuroncmd/vectors.dat";
-	private static final String PATH_DATA = "samples/res/neuroncmd/data.dat";
+	private static final String PATH_LOG = "res/neuroncmd/log.txt";
+	private static final String PATH_NETWORK = "res/neuroncmd/neurons.dat";
+	private static final String PATH_VECTORS = "res/neuroncmd/vectors.dat";
+	private static final String PATH_DATA = "res/neuroncmd/data.dat";
 
 	private SimpleDeltaNetworkWithBackpropagation<float[], SupervisedLearnVector> network;
 	private ContinuousSupervisedLearning<SimpleDeltaNetworkWithBackpropagation<?, SupervisedLearnVector>, SupervisedLearnVector> learning;

@@ -20,11 +20,11 @@ import java.util.stream.Stream;
 
 public class Main implements LearningListener<DigitVector>, TestingListener<DigitVector, Integer>
 {
-	private static final String PATH_TRAIN_IMAGES = "samples/res/imagerecognition/Cyfry/train.images";
-	private static final String PATH_TRAIN_LABELS = "samples/res/imagerecognition/Cyfry/train.labels";
-	private static final String PATH_TEST_IMAGES = "samples/res/imagerecognition/Cyfry/test.images";
-	private static final String PATH_TEST_LABELS = "samples/res/imagerecognition/Cyfry/test.labels";
-	private static final String PATH_NETWORK_DATA = "samples/res/imagerecognition/network.dat";
+	private static final String PATH_TRAIN_IMAGES = "res/imagerecognition/Cyfry/train.images";
+	private static final String PATH_TRAIN_LABELS = "res/imagerecognition/Cyfry/train.labels";
+	private static final String PATH_TEST_IMAGES = "res/imagerecognition/Cyfry/test.images";
+	private static final String PATH_TEST_LABELS = "res/imagerecognition/Cyfry/test.labels";
+	private static final String PATH_NETWORK_DATA = "res/imagerecognition/network.dat";
 	
 	private static final int MAX_TRAIN_IMAGES = 60000;
 	private static final int MAX_TEST_IMAGES = 10000;
@@ -87,21 +87,21 @@ public class Main implements LearningListener<DigitVector>, TestingListener<Digi
 		SimpleDeltaLayerWithBackpropagation outputLayer = new SimpleDeltaLayerWithBackpropagation(10, 300, new ActivationSigmoidal(1.2f));
 		
 		return new SimpleDeltaNetworkWithBackpropagation<>(new SimpleDeltaLayerWithBackpropagation[] { hiddenLayer, outputLayer }, INITIAL_LEARN_RATE,
-											INITIAL_MOMENTUM, new NominalOutput<>(i -> i, 0.7f));
+				INITIAL_MOMENTUM, new NominalOutput<>(i -> i, 0.7f));
 	}
 	
 	private List<DigitVector> createTrainVectors() throws IOException
 	{
 		return Stream.of(trainImageLoader.loadImages(MAX_TRAIN_IMAGES))
-					 .map(DigitVector::new)
-					 .collect(Collectors.toList());
+				.map(DigitVector::new)
+				.collect(Collectors.toList());
 	}
 	
 	private List<DigitVector> createTestVectors() throws IOException
 	{
 		return Stream.of(testImageLoader.loadImages(MAX_TEST_IMAGES))
-					 .map(DigitVector::new)
-					 .collect(Collectors.toList());
+				.map(DigitVector::new)
+				.collect(Collectors.toList());
 	}
 	
 	private void waitForInput() throws IOException
@@ -190,7 +190,7 @@ public class Main implements LearningListener<DigitVector>, TestingListener<Digi
 	{
 		if(output == null) System.out.println("Nierozpoznano.");
 		else System.out.printf("Rozpoznano: %d, oczekiwano: %d. %s\n", output, vector.getDigit(),
-							   output == vector.getDigit() ? "Rozpoznano poprawnie" : "Błąd");
+				output == vector.getDigit() ? "Rozpoznano poprawnie" : "Błąd");
 		
 		if(output == null) notRecognized++;
 		else if(output == vector.getDigit()) recognizedCorrectly++;
