@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':neuralnetwork')
+    compile project(':neuralnetwork-lib')
 }
 
 task(runNeuronCmd, dependsOn: 'classes', type: JavaExec) {

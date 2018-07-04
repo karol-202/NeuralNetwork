@@ -1,2 +1,3 @@
 rootProject.name = 'NeuralNetwork'
-include ':neuralnetwork', ':samples'
+include ':neuralnetwork-lib'
+if(!System.env.JITPACK) include ':neuralnetwork-samples'
