@@ -2,7 +2,7 @@ dependencies {
     compile project(':neuralnetwork-lib')
 }
 
-task(runNeuronCmd, dependsOn: 'classes', type: JavaExec) {
+task runNeuronCmd(type: JavaExec, dependsOn: 'classes') {
     main = 'pl.karol202.neuralnetworksamples.neuroncmd.Main'
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
